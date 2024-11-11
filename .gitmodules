@@ -1,0 +1,15 @@
+[submodule "src/navigation2"]
+	path = src/navigation2
+	url = /home/sirius24/sirius_ws/src/navigation2
+[submodule "src/kobuki_core"]
+	path = src/kobuki_core
+	url = /home/sirius24/sirius_ws/src/kobuki_core/
+[submodule "src/kobuki_ros"]
+	path = src/kobuki_ros
+	url = /home/sirius24/sirius_ws/src/kobuki_ros/
+[submodule "src/slam_toolbox"]
+	path = src/slam_toolbox
+	url = /home/sirius24/sirius_ws/src/slam_toolbox
+[submodule "src/velodyne"]
+	path = src/velodyne
+	url = /home/sirius24/sirius_ws/src/velodyne
