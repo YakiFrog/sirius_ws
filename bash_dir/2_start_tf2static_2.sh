@@ -1,3 +1,5 @@
+#!/bin/sh
+trap 'echo ""; echo "Ctrl + Cが押されましたが、ウィンドウは閉じません"' 2
 while : ;do
     read -p "Press [Enter] key to start tf2 static transform publisher 2..."
     cd ~/sirius_ws

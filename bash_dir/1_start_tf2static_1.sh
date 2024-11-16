@@ -1,4 +1,7 @@
-while : ;do
+#! /bin/sh
+trap 'echo ""; echo "Ctrl + Cが押されましたが、ウィンドウは閉じません"' 2
+while true
+do
     read -p "Press [Enter] key to start tf2 static transform publisher 1..."
     cd ~/sirius_ws
     source install/setup.bash

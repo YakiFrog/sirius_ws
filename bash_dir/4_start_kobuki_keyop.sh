@@ -1,3 +1,5 @@
+#!/bin/sh
+trap 'echo ""; echo "Ctrl + Cが押されましたが、ウィンドウは閉じません"' 2
 while : ;do
     read -p "Press [Enter] key to start kobuki keyop..."
     cd ~/sirius_ws
