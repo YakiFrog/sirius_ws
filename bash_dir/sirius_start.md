@@ -15,7 +15,7 @@ ros2 launch kobuki_node kobuki_node-launch.py
 ```
 
 ```bash
-ros2 run kobuki_keyop kobuki_keyop_node --ros-args -p linear_vel_max:=1.0 -p angular_vel_step:=0.05
+ros2 run kobuki_keyop kobuki_keyop_node --ros-args -p linear_vel_max:=1.0 -p angular_vel_step:=0.05 -p angular_vel_max:=0.5
 ```
 
 ## 2. slamをするとき
@@ -158,3 +158,6 @@ pulseR = (int16)((209.125 * (222.222 + 485 / 2.0f) / 222.222) / 5)
         = (int16)(971.5 / 5)
         = 194
 ```
+
+ToDo:
+計算している箇所をSerialPrintで出力して確認する
