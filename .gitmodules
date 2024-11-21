@@ -13,3 +13,6 @@
 [submodule "src/velodyne"]
 	path = src/velodyne
 	url = /home/sirius24/sirius_ws/src/velodyne
+[submodule "src/my_rviz_plugin"]
+	path = src/my_rviz_plugin
+	url = /home/sirius24/sirius_ws/src/my_rviz_plugin
