@@ -27,7 +27,7 @@ ros2 launch slam_toolbox online_async_launch.py
 ```bash
 ros2 run nav2_map_server map_saver_cli -f <path to save map>
 ```
-例：/home/sirius/sirius_ws/map/$map_name
+例：/home/sirius24/sirius_ws/map_waypoints/map/$map_name
 
 ## 4. nav2を起動するとき
 ```bash
