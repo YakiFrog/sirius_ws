@@ -42,7 +42,7 @@ class GetPose(Node):
         except tf2.ExtrapolationException:
             self.get_logger().warn('Extrapolation error')
 
-        if distance > 5.0:
+        if distance > 3.0:
             self.positions_list.append(self.position)
 
             #取得した座標の更新
