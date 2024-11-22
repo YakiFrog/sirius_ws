@@ -91,7 +91,7 @@ class Nav2GoalClient(Node):
                 self.get_logger().info(f"Current distance to goal: {self.distance}")
 
                 # ゴールまでの距離が閾値以下であれば次のゴールを送信
-                if self.distance < 1.3: # 1.3m以内に到達したら次のゴールを送信 default: 0.7
+                if self.distance < 1.2: # default: 0.7
                     self.get_logger().info("Goal reached! Sending next goal...")
                     self.count += 1
                     self.send_goal()
