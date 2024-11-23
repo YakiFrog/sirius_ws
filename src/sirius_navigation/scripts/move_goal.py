@@ -57,13 +57,13 @@ class Nav2GoalClient(Node):
         goal_msg.pose = PoseStamped()
         goal_msg.pose.header.frame_id = "map"  # フレームを設定
         goal_msg.pose.header.stamp = self.get_clock().now().to_msg()
-        goal_msg.pose.pose.position.x = self.positions_list[self.count][0]
-        goal_msg.pose.pose.position.y = self.positions_list[self.count][1]
-        goal_msg.pose.pose.position.z = self.positions_list[self.count][2]
-        goal_msg.pose.pose.orientation.x = self.positions_list[self.count][3]
-        goal_msg.pose.pose.orientation.y = self.positions_list[self.count][4]
-        goal_msg.pose.pose.orientation.z = self.positions_list[self.count][5]
-        goal_msg.pose.pose.orientation.w = self.positions_list[self.count][6]
+        goal_msg.pose.pose.position.x = float(self.positions_list[self.count][0])
+        goal_msg.pose.pose.position.y = float(self.positions_list[self.count][1])
+        goal_msg.pose.pose.position.z = float(self.positions_list[self.count][2])
+        goal_msg.pose.pose.orientation.x = float(self.positions_list[self.count][3])
+        goal_msg.pose.pose.orientation.y = float(self.positions_list[self.count][4])
+        goal_msg.pose.pose.orientation.z = float(self.positions_list[self.count][5])
+        goal_msg.pose.pose.orientation.w = float(self.positions_list[self.count][6])
 
         self.get_logger().info("Sending goal point...")
         self._action_client.send_goal_async(goal_msg).add_done_callback(self.goal_response_callback)
