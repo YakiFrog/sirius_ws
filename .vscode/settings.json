@@ -25,5 +25,11 @@
         "/home/sirius24/sirius_ws/install/kotani_sirius_python_pkg/lib/python3.10/site-packages",
         "/opt/ros/humble/lib/python3.10/site-packages",
         "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ],
+    "favorites.resources": [
+        {
+            "filePath": "src/sirius_navigation/scripts/detect_2floor.py",
+            "group": "Default"
+        }
     ]
 }
