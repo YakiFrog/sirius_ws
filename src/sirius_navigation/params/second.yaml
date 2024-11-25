@@ -1,9 +1,7 @@
-move_goal:
-  ros_parameters:
-    count: 1
-    stop: 0 # 何秒間停止するか
-    stop_list: [18,29]
-    detect: 0 # 何秒間障害物を検知したら停止するか
-    detect_list: [48]
-    change: true # 一番最後のウェイポイントに到達したときに，マップ切り替えをするか
-    waypoint_file: "/home/sirius24/sirius_ws/map_waypoints/waypoints/sakamoto2.yaml"
+count: 1
+stop: 0 # 何秒間停止するか
+stop_list: [18,29]
+detect: 0 # 何秒間障害物を検知したら停止するか
+detect_list: [48]
+change: true # 一番最後のウェイポイントに到達したときに，マップ切り替えをするか
+waypoint_file: "/home/sirius24/sirius_ws/map_waypoints/waypoints/sakamoto2.yaml"

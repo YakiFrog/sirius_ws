@@ -16,3 +16,6 @@
 [submodule "src/my_rviz_plugin"]
 	path = src/my_rviz_plugin
 	url = https://github.com/YakiFrog/my_rviz_plugin.git
+[submodule "src/spatio_temporal_voxel_layer"]
+	path = src/spatio_temporal_voxel_layer
+	url = https://github.com/SteveMacenski/spatio_temporal_voxel_layer.git
