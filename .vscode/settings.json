@@ -30,6 +30,10 @@
         {
             "filePath": "src/sirius_navigation/scripts/detect_2floor.py",
             "group": "Default"
+        },
+        {
+            "filePath": "src/navigation2/nav2_bringup/params/nav2_params.yaml",
+            "group": "Default"
         }
     ]
 }
