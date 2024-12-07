@@ -1,0 +1,46 @@
+collision_monitor:
+  ros__parameters:
+    use_sim_time: False
+    base_frame_id: "base_footprint"
+    odom_frame_id: "odom"
+    cmd_vel_in_topic: "cmd_vel_smoothed"
+    cmd_vel_out_topic: "cmd_vel"
+    transform_tolerance: 0.25 # default: 0.5
+    source_timeout: 1000.0
+    base_shift_correction: True
+    stop_pub_timeout: 2.0
+    # Polygons represent zone around the robot for "stop" and "slowdown" action types,
+    # and robot footprint for "approach" action type.
+    # Footprint could be "polygon" type with dynamically set footprint from footprint_topic
+    # or "circle" type with static footprint set by radius. "footprint_topic" parameter
+    # to be ignored in circular case.
+    polygons: ["PolygonSlow"]
+    PolygonSlow:
+      type: "polygon"
+      points: [0.50, 0.40, 0.50, -0.40, -0.50, -0.40, -0.50, 0.40]
+      action_type: "slowdown"
+      max_points: 6
+      slowdown_ratio: 0.2 # 0.2
+      visualize: True
+      polygon_pub_topic: "polygon_slowdown"
+      enabled: True
+    FootprintApproach:
+      type: "polygon"
+      action_type: "approach"
+      footprint_topic: "/local_costmap/published_footprint"
+      time_before_collision: 2.0
+      simulation_time_step: 0.1
+      max_points: 5
+      visualize: True
+      enabled: True
+    observation_sources: ["scan", "pointcloud"]
+    scan:
+      type: "scan"
+      topic: "/hokuyo_scan"
+      enabled: True
+    pointcloud:
+      type: "pointcloud"
+      topic: "/velodyne_points"
+      min_height: -0.1
+      max_height: 2.0
+      enabled: True

@@ -120,23 +120,23 @@ bt_navigator_navigate_to_pose_rclcpp_node:
 controller_server:
   ros__parameters:
     use_sim_time: True
-    controller_frequency: 20.0
+    controller_frequency: 40.0
     FollowPath:
       plugin: "nav2_mppi_controller::MPPIController"
-      time_steps: 56
-      model_dt: 0.05 # default: 0.05
-      batch_size: 2000
-      vx_std: 0.1 # default: 0.2 -> 0.1
-      vy_std: 0.1
+      time_steps: 60
+      model_dt: 0.025 # default: 0.05
+      batch_size: 500
+      vx_std: 0.15 # default: 0.2 -> 0.1
+      vy_std: 0.15
       wz_std: 0.1 # default: 0.4 -> 0.1
       vx_max: 0.40 # default: 0.50 -> 0.40
-      vx_min: -0.40 # default: -0.35 -> -0.40
+      vx_min: 0.0 # default: -0.35 -> -0.40
       vy_max: 0.40
-      wz_max: 0.40 # default: 1.9 -> 0.4
-      ax_max: 0.10 # default: 3.0 -> 0.50
-      ax_min: -0.10 # default: -3.0 -> -0.50
-      ay_max: 0.10
-      az_max: 0.10 # default: 3.5 -> 0.35
+      wz_max: 0.20 # default: 1.9 -> 0.4
+      ax_max: 0.30 # default: 3.0 -> 0.50
+      ax_min: -0.30 # default: -3.0 -> -0.50
+      ay_max: 0.30
+      az_max: 0.15 # default: 3.5 -> 0.35
       iteration_count: 1
       prune_distance: 1.0
       transform_tolerance: 0.1 # default: 0.1 -> 0.2
@@ -150,7 +150,7 @@ controller_server:
         trajectory_step: 5
         time_step: 3
       AckermannConstraints:
-        min_turning_r: 0.2
+        min_turning_r: 0.0
       critics: ["ConstraintCritic", "CostCritic", "GoalCritic", "GoalAngleCritic", "PathAlignCritic", "PathFollowCritic", "PathAngleCritic", "PreferForwardCritic"]
       ConstraintCritic:
         enabled: true
@@ -227,40 +227,59 @@ controller_server:
 local_costmap:
   local_costmap:
     ros__parameters:
-      update_frequency: 20.0 # コストマップの更新周期[Hz] default: 5.0
-      publish_frequency: 20.0 # default: 5.0
+      update_frequency: 40.0 # コストマップの更新周期[Hz] default: 5.0
+      publish_frequency: 40.0 # default: 5.0
       global_frame: odom
       robot_base_frame: base_footprint
       use_sim_time: True
       rolling_window: true # ロボットが動くたびにコストマップを更新するかどうか
-      width: 6 # ローカルコストマップのサイズ[m]
-      height: 6 # ローカルコストマップのサイズ[m]
+      width: 5 # ローカルコストマップのサイズ[m]
+      height: 5 # ローカルコストマップのサイズ[m]
       resolution: 0.05
-      robot_radius: 0.60 # ロボットの半径[m]
-      plugins: ["voxel_layer", "inflation_layer"]
+      # robot_radius: 0.55 # ロボットの半径[m]
+      footprint: "[ [0.50, 0.30], [0.50, -0.30], [-0.50, -0.30], [-0.50, 0.30] ]" # ロボットの形状
+      plugins: ["inflation_layer", "voxel_layer", "obstacle_layer"]
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 3.0
-        inflation_radius: 0.55 # default: 0.55
+        inflation_radius: 0.15 # default: 0.55
       voxel_layer:
         plugin: "nav2_costmap_2d::VoxelLayer"
         enabled: True
+        footprint_clearing_enabled: true
+        max_obstacle_height: 2.0
         publish_voxel_map: True
         origin_z: 0.0
         z_resolution: 0.05
         z_voxels: 16
-        max_obstacle_height: 2.0
+        unknown_threshold: 15
         mark_threshold: 0
+        observation_sources: pointcloud
+        combination_method: 1
+        pointcloud:  # no frame set, uses frame from message
+          topic: /velodyne_points
+          max_obstacle_height: 2.0
+          min_obstacle_height: 0.0
+          obstacle_max_range: 3.0
+          obstacle_min_range: 0.0
+          raytrace_max_range: 3.0
+          raytrace_min_range: 0.0
+          clearing: True
+          marking: True
+          data_type: "PointCloud2"
+      obstacle_layer:
+        plugin: "nav2_costmap_2d::ObstacleLayer"
+        enabled: True
         observation_sources: scan
         scan:
-          topic: /scan
+          topic: /hokuyo_scan
           max_obstacle_height: 2.0
           clearing: True
           marking: True
           data_type: "LaserScan"
-          raytrace_max_range: 3.0
+          raytrace_max_range: 5.0
           raytrace_min_range: 0.0
-          obstacle_max_range: 2.5
+          obstacle_max_range: 5.0
           obstacle_min_range: 0.0
       static_layer:
         plugin: "nav2_costmap_2d::StaticLayer"
@@ -275,7 +294,7 @@ global_costmap:
       global_frame: map
       robot_base_frame: base_footprint # default: base_link
       use_sim_time: True
-      robot_radius: 0.60
+      robot_radius: 0.45
       resolution: 0.05
       track_unknown_space: true
       plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
@@ -289,7 +308,7 @@ global_costmap:
           clearing: True
           marking: True
           data_type: "LaserScan"
-          raytrace_max_range: 3.0
+          raytrace_max_range: 10.0
           raytrace_min_range: 0.0
           obstacle_max_range: 2.5
           obstacle_min_range: 0.0
@@ -316,6 +335,48 @@ map_saver:
     free_thresh_default: 0.25
     occupied_thresh_default: 0.65
     map_subscribe_transient_local: True
+
+# これ重い
+# planner_server:
+#   ros__parameters:
+#     expected_planner_frequency: 20.0  # 期待されるプランナの周波数
+#     use_sim_time: True  # シミュレーション時間を使用するかどうか
+#     planner_plugins: ["GridBased"]  # 使用するプランナプラグイン
+#     GridBased:
+#       plugin: "nav2_smac_planner/SmacPlannerLattice"  # 使用するプランナの種類
+#       tolerance: 0.5  # 許容誤差（メートル単位）
+#       downsample_costmap: false  # コストマップをダウンサンプリングするかどうか(default: false)
+#       downsampling_factor: 1  # コストマップレイヤーの解像度の倍率
+#       allow_unknown: true  # 未知の領域を通過することを許可するかどうか
+#       max_iterations: 1000000  # 最大反復回数（到達不可能な場合）
+#       max_on_approach_iterations: 1000  # 許容誤差内でゴールに到達するための最大反復回数
+#       terminal_checking_interval: 5000  # ゴールがキャンセルされたかプランナがタイムアウトしたかをチェックする間隔（反復回数）
+#       max_planning_time: 3.5  # プランニング、スムージング、アップサンプリングの最大時間（秒単位）
+#       motion_model_for_search: "DUBIN"  # 使用するモーションモデル（Hybrid Dubin, Reeds-Shepp）
+#       cost_travel_multiplier: 2.0  # 高コスト領域を避けるためのコスト乗数
+#       angle_quantization_bins: 64  # 角度の量子化ビンの数（2Dノードの場合は1）
+#       analytic_expansion_ratio: 3.5  # アナリティック展開の比率
+#       analytic_expansion_max_length: 3.0  # アナリティック展開の最大長さ（メートル単位）
+#       analytic_expansion_max_cost: 200  # アナリティック展開の最大コスト
+#       analytic_expansion_max_cost_override: false  # ゴールに近い場合に最大コスト設定を上書きするかどうか
+#       minimum_turning_radius: 0.0  # 最小旋回半径（メートル単位）
+#       reverse_penalty: 2.1  # 逆行動のペナルティ
+#       change_penalty: 0.0  # 方向転換のペナルティ
+#       non_straight_penalty: 1.20  # 非直線行動のペナルティ
+#       cost_penalty: 2.0  # 高コスト領域のペナルティ
+#       retrospective_penalty: 0.025  # 後方展開のペナルティ
+#       rotation_penalty: 0.0  # その場回転のペナルティ
+#       lookup_table_size: 20.0  # ルックアップテーブルのサイズ（メートル単位）
+#       cache_obstacle_heuristic: True  # 障害物ヒューリスティックのキャッシュ
+#       allow_reverse_expansion: True  # 逆方向の展開を許可するかどうか
+#       smooth_path: True  # パスをスムーズにするかどうか
+#       debug_visualizations: False  # デバッグ用の可視化を行うかどうか
+#       smoother:
+#         max_iterations: 1000  # スムージングの最大反復回数
+#         w_smooth: 0.3  # スムージングの重み
+#         w_data: 0.2  # データの重み
+#         tolerance: 1.0e-10  # 許容誤差
+#         do_refinement: true  # 精緻化を行うかどうか  
 
 planner_server:
   ros__parameters:
@@ -359,9 +420,9 @@ behavior_server:
     transform_tolerance: 0.1
     use_sim_time: true
     simulate_ahead_time: 4.0 # どんくらい先まで予測するか[s] default: 2.0
-    max_rotational_vel: 1.0
-    min_rotational_vel: 0.4
-    rotational_acc_lim: 3.2
+    max_rotational_vel: 0.40
+    min_rotational_vel: 0.05
+    rotational_acc_lim: 0.15
 
 robot_state_publisher:
   ros__parameters:
