@@ -1,7 +1,7 @@
 import os
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, ExecuteProcess
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution, Command, FindExecutable
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
@@ -9,8 +9,9 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 def generate_launch_description():
     packages_name = "Sirius_description"
-    xacro_file_name = "Sirius.xacro"
+    xacro_file_name = "Sirius.urdf"
     rviz_file_name = "urdf.rviz"
+    world_file_name = "empty.world"  # 使用するGazeboのワールドファイル名を指定
 
     robot_description_content = Command(
         [
@@ -28,6 +29,10 @@ def generate_launch_description():
 
     rviz_config_file = PathJoinSubstitution(
         [FindPackageShare(packages_name), "rviz", rviz_file_name]
+    )
+
+    world_path = PathJoinSubstitution(
+        [FindPackageShare(packages_name), "worlds", world_file_name]
     )
 
     robot_state_pub_node = Node(
@@ -48,16 +53,7 @@ def generate_launch_description():
         output="log",
         arguments=["-d", rviz_config_file],
     )
-
-    # Gazeboのノードを追加
-    gazebo_launch_file = PathJoinSubstitution(
-        [FindPackageShare("gazebo_ros"), "launch", "gazebo.launch.py"]
-    )
-    gazebo = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(gazebo_launch_file),
-        launch_arguments={"world": PathJoinSubstitution([FindPackageShare(packages_name), "worlds", "your_world.world"])}.items(),
-    )
-
+    
     spawn_entity = Node(
         package="gazebo_ros",
         executable="spawn_entity.py",
@@ -65,12 +61,16 @@ def generate_launch_description():
         output="screen",
     )
 
-    nodes = [
-        rviz_node,
-        robot_state_pub_node,
-        joint_state_pub_gui_node,
-        # gazebo,
-        # spawn_entity,
-    ]
+    # Gazeboを起動するためのExecuteProcess
+    start_gazebo = ExecuteProcess(
+        cmd=['gazebo', '--verbose', '-s', 'libgazebo_ros_init.so', '-s', 'libgazebo_ros_factory.so', world_path],
+        output='screen'
+    )
 
-    return LaunchDescription(nodes)
+    return LaunchDescription([
+        # start_gazebo,
+        # rviz_node,
+        robot_state_pub_node,
+        # joint_state_pub_gui_node,
+        # spawn_entity,
+    ])
