@@ -4,9 +4,9 @@
 import rclpy
 from rclpy.node import Node
 from rclpy.action import ActionClient
+from tf2_ros import Buffer, TransformListener, LookupException
 from nav2_msgs.action import NavigateToPose
 from geometry_msgs.msg import PoseStamped, TransformStamped
-from tf2_ros import Buffer, TransformListener
 import yaml
 import math
 import argparse
@@ -32,10 +32,12 @@ class Nav2GoalClient(Node):
         self.tfBuffer = Buffer()
         self.listener = TransformListener(self.tfBuffer, self)
         
-        self.wayponts = self.load_waypoints()
+        file_path = "/home/sirius24/sirius_ws/map_waypoints/waypoints/waypoints.yaml"
+        self.waypoints = self.load_waypoints(file_path)
         self.count = count - 1
         self.loop_count = 0
         self.distance = float('inf')
+        self.positions_list = []
         self.timer = self.create_timer(1.0, self.get_position)
         
     def load_waypoints(self, file_path: str) -> List[Waypoint]:
@@ -64,12 +66,59 @@ class Nav2GoalClient(Node):
         goal_msg.pose.pose.position.z = 0.0
         goal_msg.pose.pose.orientation.x = 0.0
         goal_msg.pose.pose.orientation.y = 0.0
-        goal_msg.pose.pose.orientation.z = math.sin(wp.angle_radians / 2)
-        goal_msg.pose.pose.orientation.w = math.cos(wp.angle_radians / 2)
+        goal_msg.pose.pose.orientation.z = float(wp.angle_radians)
+        goal_msg.pose.pose.orientation.w = float(math.sqrt(1 - wp.angle_radians ** 2))
         
         self.get_logger().info(f"Sending goal {wp.number}...")
         self._action_client.send_goal_async(goal_msg).add_done_callback(self.goal_response_callback)
-        
+    
+    def goal_response_callback(self, future):
+        if future.result().accepted:
+            self.get_logger().info("Goal accepted...")
+            self.distance = float('inf')  # 新しいゴールが受理されたので距離をリセット
+        else:
+            self.get_logger().info("Goal rejected...")
+            
+    def get_position(self):
+        try:
+            # 最新のtransformを取得
+            when = self.tfBuffer.get_latest_common_time('map', 'base_footprint')
+            transform = self.tfBuffer.lookup_transform(
+                'map',
+                'base_footprint',
+                when
+            )
+            translation = transform.transform.translation
+            self.position = [translation.x, translation.y]
+
+            # waypointsとpositions_listの長さをチェック
+            if self.count < len(self.waypoints):
+                current_wp = self.waypoints[self.count]
+                x_goal = current_wp.x
+                y_goal = current_wp.y
+                x_distance = x_goal - self.position[0]
+                y_distance = y_goal - self.position[1]
+                self.distance = math.sqrt(x_distance**2 + y_distance**2)
+                self.get_logger().info(f"Current distance to goal: {self.distance}")
+
+                if self.distance < 0.7:
+                    self.get_logger().info("Goal reached! Sending next goal...")
+                    self.count += 1
+                    self.send_goal()
+                
+                elif self.loop_count % 5 == 0:
+                    self.send_goal()
+                
+                self.loop_count += 1
+
+        except LookupException:
+            self.get_logger().warn("Transform lookup failed. Retrying...")
+        except Exception as e:
+            self.get_logger().warn(f"Transform error: {str(e)}")
+            
+        # タイマーの周期を2秒に変更
+        self.timer.timer_period_ns = 2000000000  # 2秒
+            
 def main(args = None):
     parser = argparse.ArgumentParser(description='Set the starting waypoint index.')
     parser.add_argument('--count', type = int, default = 1, help = 'Starting waypoint index (default: 1)')
@@ -84,4 +133,3 @@ def main(args = None):
     
 if __name__ == '__main__':
     main()
-        
