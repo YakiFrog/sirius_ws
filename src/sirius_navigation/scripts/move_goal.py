@@ -12,6 +12,7 @@ import math
 import argparse
 from dataclasses import dataclass
 from typing import List
+from math import sin, cos, pi
 
 @dataclass
 class Waypoint:
@@ -51,6 +52,17 @@ class Nav2GoalClient(Node):
             rotate = wp.get('rotate', 0.0) # キーが存在しない場合は0.0を返す
         ) for wp in data['waypoints']]
         
+    def euler_to_quaternion(self, yaw):
+        """
+        オイラー角（Yaw）からQuaternionに変換
+        """
+        return [
+            0.0,  # x
+            0.0,  # y
+            sin(yaw / 2.0),  # z
+            cos(yaw / 2.0)   # w
+        ]
+        
     def send_goal(self):
         if self.count >= len(self.waypoints):
             self.get_logger().info("All goals have been sent.")
@@ -64,10 +76,13 @@ class Nav2GoalClient(Node):
         goal_msg.pose.pose.position.x = float(wp.x)
         goal_msg.pose.pose.position.y = float(wp.y)
         goal_msg.pose.pose.position.z = 0.0
-        goal_msg.pose.pose.orientation.x = 0.0
-        goal_msg.pose.pose.orientation.y = 0.0
-        goal_msg.pose.pose.orientation.z = float(wp.angle_radians)
-        goal_msg.pose.pose.orientation.w = float(math.sqrt(1 - wp.angle_radians ** 2))
+        
+        # 四元数の計算
+        quat = self.euler_to_quaternion(float(wp.angle_radians))
+        goal_msg.pose.pose.orientation.x = quat[0]
+        goal_msg.pose.pose.orientation.y = quat[1]
+        goal_msg.pose.pose.orientation.z = quat[2]
+        goal_msg.pose.pose.orientation.w = quat[3]
         
         self.get_logger().info(f"Sending goal {wp.number}...")
         self._action_client.send_goal_async(goal_msg).add_done_callback(self.goal_response_callback)
