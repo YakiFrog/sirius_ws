@@ -38,9 +38,9 @@ amcl:
     save_pose_rate: 0.5
     sigma_hit: 0.2
     tf_broadcast: True
-    transform_tolerance: 0.2 # 1.0 
-    update_min_a: 0.3 # パーティクルフィルタの更新の閾値 default: 0.2
-    update_min_d: 0.30 # パーティクルフィルタの更新の閾値 default: 0.25
+    transform_tolerance: 5.0 # 1.0 
+    update_min_a: 0.2 # パーティクルフィルタの更新の閾値 default: 0.2
+    update_min_d: 0.25 # パーティクルフィルタの更新の閾値 default: 0.25
     z_hit: 0.5
     z_max: 0.05
     z_rand: 0.5
@@ -366,7 +366,31 @@ global_costmap:
       robot_radius: 0.45
       resolution: 0.10
       track_unknown_space: True
-      plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
+      plugins: ["static_layer", "obstacle_layer", "inflation_layer", "voxel_layer"]
+      voxel_layer:
+        plugin: "nav2_costmap_2d::VoxelLayer"
+        enabled: True
+        footprint_clearing_enabled: True
+        max_obstacle_height: 2.0
+        publish_voxel_map: True
+        origin_z: 0.0
+        z_resolution: 0.1
+        z_voxels: 16 # 16
+        unknown_threshold: 6 # default: 15
+        mark_threshold: 0
+        observation_sources: pointcloud
+        combination_method: 1
+        pointcloud:  # no frame set, uses frame from message
+          topic: /velodyne_points
+          max_obstacle_height: 2.0
+          min_obstacle_height: 0.05
+          obstacle_max_range: 5.0 # 3.0
+          obstacle_min_range: 0.2 # 0.0
+          raytrace_max_range: 5.0 # 3.0
+          raytrace_min_range: 0.2 # 0.0
+          clearing: True
+          marking: True
+          data_type: "PointCloud2"
       obstacle_layer:
         plugin: "nav2_costmap_2d::ObstacleLayer"
         enabled: True
@@ -496,6 +520,7 @@ behavior_server:
 robot_state_publisher:
   ros__parameters:
     use_sim_time: False
+    publish_frequency: 50.0
 
 waypoint_follower:
   ros__parameters:
