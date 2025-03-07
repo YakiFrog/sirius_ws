@@ -5,5 +5,5 @@ export ROS_DOMAIN_ID=57
 while : ;do
     read -p "Press [Enter] key to start tf2 static transform publisher 1..."
     source install/setup.bash
-    ros2 run tf2_ros static_transform_publisher 0 0 0 0 0 0 base_footprint base_link
+    ros2 run tf2_ros static_transform_publisher 0.3 0 0.165 0 0 0 base_footprint laser
 done
