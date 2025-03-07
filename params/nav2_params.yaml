@@ -39,8 +39,8 @@ amcl:
     sigma_hit: 0.2
     tf_broadcast: true
     transform_tolerance: 1.0
-    update_min_a: 0.05 # パーティクルフィルタの更新の閾値 default: 0.2
-    update_min_d: 0.1 # パーティクルフィルタの更新の閾値 default: 0.25
+    update_min_a: 0.2 # パーティクルフィルタの更新の閾値 default: 0.2
+    update_min_d: 0.25 # パーティクルフィルタの更新の閾値 default: 0.25
     z_hit: 0.5
     z_max: 0.05
     z_rand: 0.5
@@ -228,7 +228,7 @@ bt_navigator_navigate_to_pose_rclcpp_node:
 controller_server:
   ros__parameters:
     use_sim_time: True
-    controller_frequency: 40.0
+    controller_frequency: 30.0
     min_x_velocity_threshold: 0.001
     min_y_velocity_threshold: 0.0
     min_theta_velocity_threshold: 0.001
@@ -255,20 +255,20 @@ controller_server:
 
       min_vel_x: 0.0
       min_vel_y: 0.0
-      max_vel_x: 0.40
+      max_vel_x: 0.30
       max_vel_y: 0.0
-      max_vel_theta: 0.40
+      max_vel_theta: 0.80 # でかくないと
       min_speed_xy: 0.0
-      max_speed_xy: 0.40
+      max_speed_xy: 0.30
       min_speed_theta: 0.0
       # Add high threshold velocity for turtlebot 3 issue.
       # https://github.com/ROBOTIS-GIT/turtlebot3_simulations/issues/75
-      acc_lim_x: 0.30
+      acc_lim_x: 0.60
       acc_lim_y: 0.0
-      acc_lim_theta: 0.30
-      decel_lim_x: -0.30
+      acc_lim_theta: 1.5
+      decel_lim_x: -0.60
       decel_lim_y: 0.0
-      decel_lim_theta: -0.30
+      decel_lim_theta: -1.5
 
       vx_samples: 10 # default: 20
       vy_samples: 5
@@ -297,45 +297,66 @@ controller_server:
 local_costmap:
   local_costmap:
     ros__parameters:
-      update_frequency: 40.0 # コストマップの更新周期[Hz] default: 5.0
-      publish_frequency: 40.0 # default: 5.0
+      update_frequency: 4.0 # コストマップの更新周期[Hz] default: 5.0
+      publish_frequency: 10.0 # default: 5.0
       global_frame: odom
       robot_base_frame: base_footprint
       use_sim_time: True
       rolling_window: True # ロボットが動くたびにコストマップを更新するかどうか
-      width: 5 # ローカルコストマップのサイズ[m]
-      height: 5 # ローカルコストマップのサイズ[m]
-      resolution: 0.05
+      width: 3 # ローカルコストマップのサイズ[m]
+      height: 3 # ローカルコストマップのサイズ[m]
+      resolution: 0.20
       footprint: "[ [0.50, 0.30], [0.50, -0.30], [-0.50, -0.30], [-0.50, 0.30] ]" # ロボットの形状
-      plugins: ["inflation_layer", "voxel_layer", "obstacle_layer"]
+      # plugins: ["inflation_layer", "voxel_layer", "obstacle_layer"]
+      plugins: ["voxel_layer", "inflation_layer"]
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
-        cost_scaling_factor: 20.0
+        cost_scaling_factor: 30.0
         inflation_radius: 0.10 # default: 0.55
+      # voxel_layer:
+      #   plugin: "nav2_costmap_2d::VoxelLayer"
+      #   enabled: True
+      #   footprint_clearing_enabled: True
+      #   max_obstacle_height: 2.0
+      #   publish_voxel_map: True
+      #   origin_z: 0.0
+      #   z_resolution: 0.05
+      #   z_voxels: 16
+      #   unknown_threshold: 10 # default: 15
+      #   mark_threshold: 0
+      #   observation_sources: pointcloud
+      #   combination_method: 1
+      #   pointcloud:  # no frame set, uses frame from message
+      #     topic: /velodyne_points
+      #     max_obstacle_height: 2.0
+      #     min_obstacle_height: 0.0
+      #     obstacle_max_range: 3.0
+      #     obstacle_min_range: 0.0
+      #     raytrace_max_range: 3.0
+      #     raytrace_min_range: 0.0
+      #     clearing: True
+      #     marking: True
+      #     data_type: "PointCloud2"
       voxel_layer:
         plugin: "nav2_costmap_2d::VoxelLayer"
         enabled: True
-        footprint_clearing_enabled: True
-        max_obstacle_height: 2.0
         publish_voxel_map: True
-        origin_z: 0.0
-        z_resolution: 0.05
-        z_voxels: 16
-        unknown_threshold: 10 # default: 15
-        mark_threshold: 0
-        observation_sources: pointcloud
-        combination_method: 1
-        pointcloud:  # no frame set, uses frame from message
-          topic: /velodyne_points
-          max_obstacle_height: 2.0
-          min_obstacle_height: 0.0
-          obstacle_max_range: 3.0
-          obstacle_min_range: 0.0
-          raytrace_max_range: 3.0
-          raytrace_min_range: 0.0
+        origin_z: 0.0 #3D環境におけるマップの高さ(m)
+        z_resolution: 0.20 #立体セルの解像度(m)
+        z_voxels: 16  #縦方向に何分割するか
+        max_obstacle_height: 2.0 #回避する障害物の高さの上限(m)
+        mark_threshold: 0 #障害物をマークする閾値
+        observation_sources: scan
+        scan:
+          topic: /scan
+          max_obstacle_height: 2.0 #回避する障害物の高さの上限(m)
           clearing: True
           marking: True
-          data_type: "PointCloud2"
+          data_type: "LaserScan"
+          raytrace_max_range: 3.0 #障害物を検出できる最大距離(m)
+          raytrace_min_range: 0.0 #障害物を検出できる最小距離(m)
+          obstacle_max_range: 2.5 #障害物を検出する最大距離(m)
+          obstacle_min_range: 0.0 #障害物を検出する最小距離(m)
       obstacle_layer:
         plugin: "nav2_costmap_2d::ObstacleLayer"
         enabled: True
@@ -516,8 +537,8 @@ velocity_smoother:
     feedback: "OPEN_LOOP" # デフォルトは"OPEN_LOOP" CLOSED_LOOPにすると動かない
     max_velocity: [0.40, 0.0, 0.40]
     min_velocity: [-0.40, 0.0, -0.40]
-    max_accel: [0.30, 0.0, 0.30] # default: [0.30, 0.0, 0.35]
-    max_decel: [-0.30, 0.0, -0.30] # default: [-0.30, 0.0, -0.35]
+    max_accel: [0.60, 0.0, 1.5] # default: [0.30, 0.0, 0.35]
+    max_decel: [-0.60, 0.0, -1.5] # default: [-0.30, 0.0, -0.35]
     odom_topic: "odom"
     odom_duration: 0.1
     deadband_velocity: [0.0, 0.0, 0.0]
