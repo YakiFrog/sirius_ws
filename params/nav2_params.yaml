@@ -1,6 +1,6 @@
 amcl:
   ros__parameters:
-    use_sim_time: True
+    use_sim_time: False
 
     # ロボットの動作モデルのパラメータ
     alpha1: 0.2 # ロールのノイズの標準偏差
@@ -15,7 +15,7 @@ amcl:
     beam_skip_distance: 0.5 # ビームスキップの距離[m]
     beam_skip_error_threshold: 0.9 # ビームスキップのエラー閾値
     beam_skip_threshold: 0.3 # ビームスキップの閾値
-    do_beamskip: false # ビームスキップを行うかどうか 
+    do_beamskip: True # ビームスキップを行うかどうか default: False
 
     lambda_short: 0.1
     laser_likelihood_max_dist: 100.0 # レーザの尤度の最大距離[m] default: 2.0
@@ -24,23 +24,23 @@ amcl:
     laser_model_type: "likelihood_field" 
 
     # パーティクルフィルタのパラメータ
-    max_beams: 60 # ビームの数
+    max_beams: 30 # ビームの数 default: 60
     max_particles: 2000 # パーティクルの数 default: 2000
     min_particles: 400 # パーティクルの最小数 default: 500 -> 400
 
     odom_frame_id: "odom"
     pf_err: 0.05
     pf_z: 0.99
-    recovery_alpha_fast: 0.0 # リカバリのα値 0.4 -> 0.2 0.4がでかすぎた
-    recovery_alpha_slow: 0.0 # リカバリのα値 いれるなら，0.1以上じゃないと動かない
-    resample_interval: 1
+    recovery_alpha_fast: 0.1 # リカバリのα値 0.4 -> 0.2 0.4がでかすぎた
+    recovery_alpha_slow: 0.1 # リカバリのα値 いれるなら，0.1以上じゃないと動かない
+    resample_interval: 2 # リサンプリングの間隔 default: 1
     robot_model_type: "nav2_amcl::DifferentialMotionModel"
     save_pose_rate: 0.5
     sigma_hit: 0.2
-    tf_broadcast: true
-    transform_tolerance: 1.0
-    update_min_a: 0.2 # パーティクルフィルタの更新の閾値 default: 0.2
-    update_min_d: 0.25 # パーティクルフィルタの更新の閾値 default: 0.25
+    tf_broadcast: True
+    transform_tolerance: 0.2 # default: 1.0
+    update_min_a: 0.3 # パーティクルフィルタの更新の閾値 default: 0.2
+    update_min_d: 0.30 # パーティクルフィルタの更新の閾値 default: 0.25
     z_hit: 0.5
     z_max: 0.05
     z_rand: 0.5
@@ -49,7 +49,7 @@ amcl:
 
 bt_navigator:
   ros__parameters:
-    use_sim_time: True
+    use_sim_time: False
     global_frame: map
     robot_base_frame: base_footprint # default: base_link
     odom_topic: /odom
@@ -111,16 +111,16 @@ bt_navigator:
 
 bt_navigator_navigate_through_poses_rclcpp_node:
   ros__parameters:
-    use_sim_time: True
+    use_sim_time: False
 
 bt_navigator_navigate_to_pose_rclcpp_node:
   ros__parameters:
-    use_sim_time: True
+    use_sim_time: False
 
 # controller_server:
 #   ros__parameters:
-#     use_sim_time: True
-#     controller_frequency: 20.0
+#     use_sim_time: False
+#     controller_frequency: 30.0
 #     FollowPath:
 #       plugin: "nav2_mppi_controller::MPPIController"
 #       time_steps: 60
@@ -136,16 +136,16 @@ bt_navigator_navigate_to_pose_rclcpp_node:
 #       ax_max: 0.30 # default: 3.0 -> 0.50
 #       ax_min: -0.30 # default: -3.0 -> -0.50
 #       ay_max: 0.30
-#       az_max: 0.15 # default: 3.5 -> 0.35
+#       az_max: 1.00 # default: 3.5 -> 0.35
 #       iteration_count: 1
 #       prune_distance: 1.0
 #       transform_tolerance: 0.1 # default: 0.1 -> 0.2
 #       temperature: 0.3
 #       gamma: 0.015
 #       motion_model: "DiffDrive"
-#       visualize: false # default: false -> trueにするとパフォーマンスが落ちる
+#       visualize: False # default: False -> trueにするとパフォーマンスが落ちる
 #       reset_period: 1.0 # (only in Humble)
-#       regenerate_noises: false
+#       regenerate_noises: False
 #       TrajectoryVisualizer:
 #         trajectory_step: 5
 #         time_step: 3
@@ -153,61 +153,61 @@ bt_navigator_navigate_to_pose_rclcpp_node:
 #         min_turning_r: 0.0
 #       critics: ["ConstraintCritic", "CostCritic", "GoalCritic", "GoalAngleCritic", "PathAlignCritic", "PathFollowCritic", "PathAngleCritic", "PreferForwardCritic"]
 #       ConstraintCritic:
-#         enabled: true
+#         enabled: True
 #         cost_power: 1
 #         cost_weight: 4.0
 #       GoalCritic:
-#         enabled: true
+#         enabled: True
 #         cost_power: 1
 #         cost_weight: 5.0
 #         threshold_to_consider: 1.4
 #       GoalAngleCritic:
-#         enabled: true
+#         enabled: True
 #         cost_power: 1
 #         cost_weight: 3.0
 #         threshold_to_consider: 0.5
 #       PreferForwardCritic:
-#         enabled: true
+#         enabled: True
 #         cost_power: 1
 #         cost_weight: 5.0
 #         threshold_to_consider: 0.5
 #       # ObstaclesCritic:
-#       #   enabled: true
+#       #   enabled: True
 #       #   cost_power: 1
 #       #   repulsion_weight: 1.5
 #       #   critical_weight: 20.0
-#       #   consider_footprint: false
+#       #   consider_footprint: False
 #       #   collision_cost: 10000.0
 #       #   collision_margin_distance: 0.1
 #       #   near_goal_distance: 0.5
 #       #   inflation_radius: 0.55 # (only in Humble)
 #       #   cost_scaling_factor: 10.0 # (only in Humble)
 #       CostCritic:
-#         enabled: true
+#         enabled: True
 #         cost_power: 1
 #         cost_weight: 3.81
 #         critical_cost: 300.0
-#         consider_footprint: true
+#         consider_footprint: True
 #         collision_cost: 1000000.0
 #         near_goal_distance: 1.0
 #         trajectory_point_step: 2
 #       PathAlignCritic:
-#         enabled: true
+#         enabled: True
 #         cost_power: 1
 #         cost_weight: 14.0
 #         max_path_occupancy_ratio: 0.05
 #         trajectory_point_step: 4
 #         threshold_to_consider: 0.5
 #         offset_from_furthest: 20
-#         use_path_orientations: false
+#         use_path_orientations: False
 #       PathFollowCritic:
-#         enabled: true
+#         enabled: True
 #         cost_power: 1
 #         cost_weight: 5.0
 #         offset_from_furthest: 5
 #         threshold_to_consider: 1.4
 #       PathAngleCritic:
-#         enabled: true
+#         enabled: True
 #         cost_power: 1
 #         cost_weight: 2.0
 #         offset_from_furthest: 4
@@ -215,21 +215,21 @@ bt_navigator_navigate_to_pose_rclcpp_node:
 #         max_angle_to_furthest: 1.0
 #         mode: 0
 #       # VelocityDeadbandCritic:
-#       #   enabled: true
+#       #   enabled: True
 #       #   cost_power: 1
 #       #   cost_weight: 35.0
 #       #   deadband_velocities: [0.05, 0.05, 0.05]
 #       # TwirlingCritic:
-#       #   enabled: true
+#       #   enabled: True
 #       #   twirling_cost_power: 1
 #       #   twirling_cost_weight: 10.0
 
 
 controller_server:
   ros__parameters:
-    use_sim_time: True
+    use_sim_time: False
     controller_frequency: 30.0
-    min_x_velocity_threshold: 0.001
+    min_x_velocity_threshold: 0.05
     min_y_velocity_threshold: 0.0
     min_theta_velocity_threshold: 0.001
     failure_tolerance: 0.3
@@ -246,27 +246,27 @@ controller_server:
     general_goal_checker:
       stateful: True
       plugin: "nav2_controller::SimpleGoalChecker"
-      xy_goal_tolerance: 0.25
-      yaw_goal_tolerance: 0.25
+      xy_goal_tolerance: 0.5 # 0.25
+      yaw_goal_tolerance: 0.5 # 0.25
     # DWB parameters
     FollowPath:
       plugin: "dwb_core::DWBLocalPlanner"
       debug_trajectory_details: True
 
-      min_vel_x: 0.0
+      min_vel_x: 0.1
       min_vel_y: 0.0
-      max_vel_x: 0.30
+      max_vel_x: 0.25
       max_vel_y: 0.0
-      max_vel_theta: 0.80 # でかくないと
+      max_vel_theta: 1.0 # でかくないと
       min_speed_xy: 0.0
-      max_speed_xy: 0.30
-      min_speed_theta: 0.0
+      max_speed_xy: 0.25
+      min_speed_theta: 0.1
       # Add high threshold velocity for turtlebot 3 issue.
       # https://github.com/ROBOTIS-GIT/turtlebot3_simulations/issues/75
-      acc_lim_x: 0.60
+      acc_lim_x: 0.6
       acc_lim_y: 0.0
       acc_lim_theta: 1.5
-      decel_lim_x: -0.60
+      decel_lim_x: -0.6
       decel_lim_y: 0.0
       decel_lim_theta: -1.5
 
@@ -278,12 +278,12 @@ controller_server:
       linear_granularity: 0.05
       angular_granularity: 0.025 
       transform_tolerance: 0.2
-      xy_goal_tolerance: 0.25
+      xy_goal_tolerance: 0.5 # 0.25
       trans_stopped_velocity: 0.25
       short_circuit_trajectory_evaluation: True
       stateful: True
       critics: ["RotateToGoal", "Oscillation", "BaseObstacle", "GoalAlign", "PathAlign", "PathDist", "GoalDist"]
-      BaseObstacle.scale: 0.02
+      BaseObstacle.scale: 0.50 # 0.02
       PathAlign.scale: 32.0
       PathAlign.forward_point_distance: 0.1
       GoalAlign.scale: 24.0
@@ -297,66 +297,46 @@ controller_server:
 local_costmap:
   local_costmap:
     ros__parameters:
-      update_frequency: 4.0 # コストマップの更新周期[Hz] default: 5.0
+      update_frequency: 5.0 # コストマップの更新周期[Hz] default: 5.0
       publish_frequency: 10.0 # default: 5.0
       global_frame: odom
       robot_base_frame: base_footprint
-      use_sim_time: True
+      use_sim_time: False
       rolling_window: True # ロボットが動くたびにコストマップを更新するかどうか
       width: 3 # ローカルコストマップのサイズ[m]
       height: 3 # ローカルコストマップのサイズ[m]
-      resolution: 0.20
+      resolution: 0.10
       footprint: "[ [0.50, 0.30], [0.50, -0.30], [-0.50, -0.30], [-0.50, 0.30] ]" # ロボットの形状
-      # plugins: ["inflation_layer", "voxel_layer", "obstacle_layer"]
-      plugins: ["voxel_layer", "inflation_layer"]
+      plugins: ["inflation_layer", "voxel_layer", "obstacle_layer"]
+      # plugins: ["voxel_layer", "inflation_layer"]
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
-        cost_scaling_factor: 30.0
+        cost_scaling_factor: 10.0
         inflation_radius: 0.10 # default: 0.55
-      # voxel_layer:
-      #   plugin: "nav2_costmap_2d::VoxelLayer"
-      #   enabled: True
-      #   footprint_clearing_enabled: True
-      #   max_obstacle_height: 2.0
-      #   publish_voxel_map: True
-      #   origin_z: 0.0
-      #   z_resolution: 0.05
-      #   z_voxels: 16
-      #   unknown_threshold: 10 # default: 15
-      #   mark_threshold: 0
-      #   observation_sources: pointcloud
-      #   combination_method: 1
-      #   pointcloud:  # no frame set, uses frame from message
-      #     topic: /velodyne_points
-      #     max_obstacle_height: 2.0
-      #     min_obstacle_height: 0.0
-      #     obstacle_max_range: 3.0
-      #     obstacle_min_range: 0.0
-      #     raytrace_max_range: 3.0
-      #     raytrace_min_range: 0.0
-      #     clearing: True
-      #     marking: True
-      #     data_type: "PointCloud2"
       voxel_layer:
         plugin: "nav2_costmap_2d::VoxelLayer"
         enabled: True
+        footprint_clearing_enabled: True
+        max_obstacle_height: 2.0
         publish_voxel_map: True
-        origin_z: 0.0 #3D環境におけるマップの高さ(m)
-        z_resolution: 0.20 #立体セルの解像度(m)
-        z_voxels: 16  #縦方向に何分割するか
-        max_obstacle_height: 2.0 #回避する障害物の高さの上限(m)
-        mark_threshold: 0 #障害物をマークする閾値
-        observation_sources: scan
-        scan:
-          topic: /scan
-          max_obstacle_height: 2.0 #回避する障害物の高さの上限(m)
+        origin_z: 0.0
+        z_resolution: 0.1
+        z_voxels: 16 # 16
+        unknown_threshold: 6 # default: 15
+        mark_threshold: 0
+        observation_sources: pointcloud
+        combination_method: 1
+        pointcloud:  # no frame set, uses frame from message
+          topic: /velodyne_points
+          max_obstacle_height: 2.0
+          min_obstacle_height: 0.05
+          obstacle_max_range: 5.0 # 3.0
+          obstacle_min_range: 0.2 # 0.0
+          raytrace_max_range: 5.0 # 3.0
+          raytrace_min_range: 0.2 # 0.0
           clearing: True
           marking: True
-          data_type: "LaserScan"
-          raytrace_max_range: 3.0 #障害物を検出できる最大距離(m)
-          raytrace_min_range: 0.0 #障害物を検出できる最小距離(m)
-          obstacle_max_range: 2.5 #障害物を検出する最大距離(m)
-          obstacle_min_range: 0.0 #障害物を検出する最小距離(m)
+          data_type: "PointCloud2"
       obstacle_layer:
         plugin: "nav2_costmap_2d::ObstacleLayer"
         enabled: True
@@ -383,10 +363,10 @@ global_costmap:
       publish_frequency: 1.0
       global_frame: map
       robot_base_frame: base_footprint # default: base_link
-      use_sim_time: True
+      use_sim_time: False
       robot_radius: 0.45
-      resolution: 0.05
-      track_unknown_space: true
+      resolution: 0.10
+      track_unknown_space: True
       plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
       obstacle_layer:
         plugin: "nav2_costmap_2d::ObstacleLayer"
@@ -409,79 +389,79 @@ global_costmap:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 3.0
         inflation_radius: 0.55
-      always_send_full_costmap: True
+      always_send_full_costmap: False
 
 map_server:
   ros__parameters:
-    use_sim_time: True
+    use_sim_time: False
     # Overridden in launch by the "map" launch configuration or provided default value.
     # To use in yaml, remove the default "map" value in the tb3_simulation_launch.py file & provide full path to map below.
     yaml_filename: ""
 
 map_saver:
   ros__parameters:
-    use_sim_time: True
+    use_sim_time: False
     save_map_timeout: 10000 # タイムアウト時間[s] default: 5.0 (5 -> 10000)
     free_thresh_default: 0.25
     occupied_thresh_default: 0.65
     map_subscribe_transient_local: True
 
 # これ重い
-# planner_server:
-#   ros__parameters:
-#     expected_planner_frequency: 20.0  # 期待されるプランナの周波数
-#     use_sim_time: True  # シミュレーション時間を使用するかどうか
-#     planner_plugins: ["GridBased"]  # 使用するプランナプラグイン
-#     GridBased:
-#       plugin: "nav2_smac_planner/SmacPlannerLattice"  # 使用するプランナの種類
-#       tolerance: 0.5  # 許容誤差（メートル単位）
-#       downsample_costmap: false  # コストマップをダウンサンプリングするかどうか(default: false)
-#       downsampling_factor: 1  # コストマップレイヤーの解像度の倍率
-#       allow_unknown: true  # 未知の領域を通過することを許可するかどうか
-#       max_iterations: 1000000  # 最大反復回数（到達不可能な場合）
-#       max_on_approach_iterations: 1000  # 許容誤差内でゴールに到達するための最大反復回数
-#       terminal_checking_interval: 5000  # ゴールがキャンセルされたかプランナがタイムアウトしたかをチェックする間隔（反復回数）
-#       max_planning_time: 3.5  # プランニング、スムージング、アップサンプリングの最大時間（秒単位）
-#       motion_model_for_search: "DUBIN"  # 使用するモーションモデル（Hybrid Dubin, Reeds-Shepp）
-#       cost_travel_multiplier: 2.0  # 高コスト領域を避けるためのコスト乗数
-#       angle_quantization_bins: 64  # 角度の量子化ビンの数（2Dノードの場合は1）
-#       analytic_expansion_ratio: 3.5  # アナリティック展開の比率
-#       analytic_expansion_max_length: 3.0  # アナリティック展開の最大長さ（メートル単位）
-#       analytic_expansion_max_cost: 200  # アナリティック展開の最大コスト
-#       analytic_expansion_max_cost_override: false  # ゴールに近い場合に最大コスト設定を上書きするかどうか
-#       minimum_turning_radius: 0.0  # 最小旋回半径（メートル単位）
-#       reverse_penalty: 2.1  # 逆行動のペナルティ
-#       change_penalty: 0.0  # 方向転換のペナルティ
-#       non_straight_penalty: 1.20  # 非直線行動のペナルティ
-#       cost_penalty: 2.0  # 高コスト領域のペナルティ
-#       retrospective_penalty: 0.025  # 後方展開のペナルティ
-#       rotation_penalty: 0.0  # その場回転のペナルティ
-#       lookup_table_size: 20.0  # ルックアップテーブルのサイズ（メートル単位）
-#       cache_obstacle_heuristic: True  # 障害物ヒューリスティックのキャッシュ
-#       allow_reverse_expansion: True  # 逆方向の展開を許可するかどうか
-#       smooth_path: True  # パスをスムーズにするかどうか
-#       debug_visualizations: False  # デバッグ用の可視化を行うかどうか
-#       smoother:
-#         max_iterations: 1000  # スムージングの最大反復回数
-#         w_smooth: 0.3  # スムージングの重み
-#         w_data: 0.2  # データの重み
-#         tolerance: 1.0e-10  # 許容誤差
-#         do_refinement: true  # 精緻化を行うかどうか  
-
 planner_server:
   ros__parameters:
-    expected_planner_frequency: 20.0 # default: 20.0 これはあげないほうがいい．上げると走行中に途中で固まったりする．
-    use_sim_time: True
-    planner_plugins: ["GridBased"]
+    expected_planner_frequency: 20.0  # 期待されるプランナの周波数
+    use_sim_time: False  # シミュレーション時間を使用するかどうか
+    planner_plugins: ["GridBased"]  # 使用するプランナプラグイン
     GridBased:
-      plugin: "nav2_navfn_planner/NavfnPlanner"
-      tolerance: 0.5
-      use_astar: true
-      allow_unknown: true
+      plugin: "nav2_smac_planner/SmacPlannerLattice"  # 使用するプランナの種類
+      tolerance: 0.5  # 許容誤差（メートル単位）
+      downsample_costmap: False  # コストマップをダウンサンプリングするかどうか(default: False)
+      downsampling_factor: 1  # コストマップレイヤーの解像度の倍率
+      allow_unknown: True  # 未知の領域を通過することを許可するかどうか
+      max_iterations: 1000000  # 最大反復回数（到達不可能な場合）
+      max_on_approach_iterations: 1000  # 許容誤差内でゴールに到達するための最大反復回数
+      terminal_checking_interval: 5000  # ゴールがキャンセルされたかプランナがタイムアウトしたかをチェックする間隔（反復回数）
+      max_planning_time: 3.5  # プランニング、スムージング、アップサンプリングの最大時間（秒単位）
+      motion_model_for_search: "DUBIN"  # 使用するモーションモデル（Hybrid Dubin, Reeds-Shepp）
+      cost_travel_multiplier: 2.0  # 高コスト領域を避けるためのコスト乗数
+      angle_quantization_bins: 64  # 角度の量子化ビンの数（2Dノードの場合は1）
+      analytic_expansion_ratio: 3.5  # アナリティック展開の比率
+      analytic_expansion_max_length: 3.0  # アナリティック展開の最大長さ（メートル単位）
+      analytic_expansion_max_cost: 200  # アナリティック展開の最大コスト
+      analytic_expansion_max_cost_override: False  # ゴールに近い場合に最大コスト設定を上書きするかどうか
+      minimum_turning_radius: 0.0  # 最小旋回半径（メートル単位）
+      reverse_penalty: 2.1  # 逆行動のペナルティ
+      change_penalty: 0.0  # 方向転換のペナルティ
+      non_straight_penalty: 1.20  # 非直線行動のペナルティ
+      cost_penalty: 5.0  # 高コスト領域のペナルティ 2.0 -> 5.0
+      retrospective_penalty: 0.025  # 後方展開のペナルティ
+      rotation_penalty: 0.0  # その場回転のペナルティ
+      lookup_table_size: 20.0  # ルックアップテーブルのサイズ（メートル単位）
+      cache_obstacle_heuristic: True  # 障害物ヒューリスティックのキャッシュ
+      allow_reverse_expansion: True  # 逆方向の展開を許可するかどうか
+      smooth_path: True  # パスをスムーズにするかどうか
+      debug_visualizations: False  # デバッグ用の可視化を行うかどうか
+      smoother:
+        max_iterations: 1000  # スムージングの最大反復回数
+        w_smooth: 0.3  # スムージングの重み
+        w_data: 0.2  # データの重み
+        tolerance: 1.0e-10  # 許容誤差
+        do_refinement: True  # 精緻化を行うかどうか  
+
+# planner_server:
+#   ros__parameters:
+#     expected_planner_frequency: 20.0 # default: 20.0 これはあげないほうがいい．上げると走行中に途中で固まったりする．
+#     use_sim_time: False
+#     planner_plugins: ["GridBased"]
+#     GridBased:
+#       plugin: "nav2_navfn_planner/NavfnPlanner"
+#       tolerance: 0.5
+#       use_astar: True
+#       allow_unknown: True
 
 smoother_server:
   ros__parameters:
-    use_sim_time: True
+    use_sim_time: False
     smoother_plugins: ["simple_smoother"]
     simple_smoother:
       plugin: "nav2_smoother::SimpleSmoother"
@@ -508,7 +488,7 @@ behavior_server:
     global_frame: odom
     robot_base_frame: base_footprint # default: base_link
     transform_tolerance: 0.1
-    use_sim_time: true
+    use_sim_time: False
     simulate_ahead_time: 4.0 # どんくらい先まで予測するか[s] default: 2.0
     max_rotational_vel: 0.40
     min_rotational_vel: 0.05
@@ -516,13 +496,13 @@ behavior_server:
 
 robot_state_publisher:
   ros__parameters:
-    use_sim_time: True
+    use_sim_time: False
 
 waypoint_follower:
   ros__parameters:
-    use_sim_time: True # default: True Falseにするとガクつく．たぶん他全部もFalseにしないといけない
+    use_sim_time: False # default: True Falseにするとガクつく．たぶん他全部もFalseにしないといけない
     loop_rate: 20
-    stop_on_failure: true # 失敗時に停止するかどうか(default: false)
+    stop_on_failure: True # 失敗時に停止するかどうか(default: False)
     waypoint_task_executor_plugin: "wait_at_waypoint"
     wait_at_waypoint:
       plugin: "nav2_waypoint_follower::WaitAtWaypoint"
@@ -531,7 +511,7 @@ waypoint_follower:
 
 velocity_smoother:
   ros__parameters:
-    use_sim_time: True
+    use_sim_time: False
     smoothing_frequency: 20.0 # default: 20.0 controller_frequencyと同じ値にしたほうがいい
     scale_velocities: False # default: False Trueにして一回ガタついたので，Falseにしている
     feedback: "OPEN_LOOP" # デフォルトは"OPEN_LOOP" CLOSED_LOOPにすると動かない
@@ -541,5 +521,5 @@ velocity_smoother:
     max_decel: [-0.60, 0.0, -1.5] # default: [-0.30, 0.0, -0.35]
     odom_topic: "odom"
     odom_duration: 0.1
-    deadband_velocity: [0.0, 0.0, 0.0]
+    deadband_velocity: [0.10, 0.0, 0.20]
     velocity_timeout: 1.0
