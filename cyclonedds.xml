@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CycloneDDS xmlns="http://cdds.io/config">
+    <Domain id="any">
+        <SharedMemory>
+            <Enable>true</Enable>
+            <LogLevel>info</LogLevel>
+        </SharedMemory>
+    </Domain>
+</CycloneDDS>
