@@ -20,3 +20,6 @@ Nav2のパラメタファイル．
 ---
 SLAM Toolboxのパラメタファイル．
 リアルタイムで地図を作成するときのパラメタを設定する．
+
+
+export CYCLONEDDS_URI=file:///home/sirius24/sirius_ws/cyclonedds.xml
