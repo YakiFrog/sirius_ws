@@ -254,18 +254,18 @@ controller_server:
 
       min_vel_x: 0.0
       min_vel_y: 0.0
-      max_vel_x: 0.40 # 0.40
+      max_vel_x: 0.50 # 0.40
       max_vel_y: 0.0
       max_vel_theta: 1.00 # でかくないと
       min_speed_xy: 0.0
-      max_speed_xy: 0.40 # 0.40
+      max_speed_xy: 0.50 # 0.40
       min_speed_theta: 0.0
       # Add high threshold velocity for turtlebot 3 issue.
       # https://github.com/ROBOTIS-GIT/turtlebot3_simulations/issues/75
-      acc_lim_x: 0.60
+      acc_lim_x: 0.70
       acc_lim_y: 0.0
       acc_lim_theta: 1.50
-      decel_lim_x: -0.60
+      decel_lim_x: -0.70
       decel_lim_y: 0.0
       decel_lim_theta: -1.50
 
@@ -333,7 +333,7 @@ local_costmap:
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 100.0
-        inflation_radius: 0.20 # default: 0.55
+        inflation_radius: 0.30 # default: 0.55
       always_send_full_costmap: True
 
 global_costmap:
@@ -407,7 +407,7 @@ global_costmap:
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 100.0
-        inflation_radius: 0.35 # default: 0.55
+        inflation_radius: 0.40 # default: 0.55
       static_layer:
         plugin: "nav2_costmap_2d::StaticLayer"
         map_subscribe_transient_local: True
@@ -539,10 +539,10 @@ velocity_smoother:
     smoothing_frequency: 20.0 # default: 20.0 controller_frequencyと同じ値にしたほうがいい
     scale_velocities: False # default: False Trueにして一回ガタついたので，Falseにしている
     feedback: "OPEN_LOOP" # デフォルトは"OPEN_LOOP" CLOSED_LOOPにすると動かない
-    max_velocity: [0.40, 0.0, 1.00]
-    min_velocity: [-0.40, 0.0, -1.00]
-    max_accel: [0.60, 0.0, 1.50] # default: [0.30, 0.0, 0.35]
-    max_decel: [-0.60, 0.0, -1.50] # default: [-0.30, 0.0, -0.35]
+    max_velocity: [0.50, 0.0, 1.00]
+    min_velocity: [-0.50, 0.0, -1.00]
+    max_accel: [0.70, 0.0, 1.50] # default: [0.30, 0.0, 0.35]
+    max_decel: [-0.70, 0.0, -1.50] # default: [-0.30, 0.0, -0.35]
     odom_topic: "odom"
     odom_duration: 0.1
     deadband_velocity: [0.00, 0.0, 0.00]
