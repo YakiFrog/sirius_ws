@@ -4,4 +4,4 @@ mode: trinary
 negate: 0
 occupied_thresh: 0.65
 origin: [-2.4000000000000004, -34.1, 0]
-resolution: 0.046
+resolution: 0.05
