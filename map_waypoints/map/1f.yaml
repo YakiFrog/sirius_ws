@@ -3,5 +3,5 @@ image: 1f.pgm
 mode: trinary
 negate: 0
 occupied_thresh: 0.65
-origin: [-49.1, -22.35, 0]
+origin: [-79.9, -42.7, 0]
 resolution: 0.05
