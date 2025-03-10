@@ -39,8 +39,8 @@ amcl:
     sigma_hit: 0.2
     tf_broadcast: True
     transform_tolerance: 0.2 # 1.0
-    update_min_a: 0.05 # パーティクルフィルタの更新の閾値 default: 0.2
-    update_min_d: 0.05 # パーティクルフィルタの更新の閾値 default: 0.25
+    update_min_a: 0.1 # パーティクルフィルタの更新の閾値 default: 0.2
+    update_min_d: 0.1 # パーティクルフィルタの更新の閾値 default: 0.25
     z_hit: 0.5
     z_max: 0.05
     z_rand: 0.5
@@ -353,7 +353,7 @@ global_costmap:
         enabled: true # レイヤーを有効化
         voxel_decay: 0.5 # ボクセル減衰時間（秒）- 線形なら秒単位、指数関数なら e^n
         decay_model: 0 # 減衰モデル（0=線形、1=指数関数、-1=永続的）
-        voxel_size: 0.05 # ボクセルサイズ（メートル）
+        voxel_size: 0.10 # ボクセルサイズ（メートル）
         track_unknown_space: true # 未知の領域を追跡するかどうか（デフォルトは既知）
         mark_threshold: 0 # 障害物としてマークするボクセル高さの閾値
         update_footprint_enabled: true # ロボットの足跡を更新するかどうか
@@ -436,7 +436,7 @@ planner_server:
     planner_plugins: ["GridBased"]  # 使用するプランナプラグイン
     GridBased:
       plugin: "nav2_smac_planner/SmacPlannerLattice"  # 使用するプランナの種類
-      tolerance: 0.1  # 許容誤差（メートル単位）
+      tolerance: 0.10  # 許容誤差（メートル単位）
       downsample_costmap: False  # コストマップをダウンサンプリングするかどうか(default: False)
       downsampling_factor: 1  # コストマップレイヤーの解像度の倍率
       allow_unknown: True  # 未知の領域を通過することを許可するかどうか
@@ -452,7 +452,7 @@ planner_server:
       analytic_expansion_max_cost: 200  # アナリティック展開の最大コスト
       analytic_expansion_max_cost_override: False  # ゴールに近い場合に最大コスト設定を上書きするかどうか
       minimum_turning_radius: 0.1  # 最小旋回半径（メートル単位）
-      reverse_penalty: 1.5  # 逆行動のペナルティ default: 2.1
+      reverse_penalty: 2.0  # 逆行動のペナルティ default: 2.1
       change_penalty: 0.2  # 方向転換のペナルティ
       non_straight_penalty: 0.80  # 非直線行動のペナルティ
       cost_penalty: 6.0  # 高コスト領域のペナルティ 2.0 -> 5.0
@@ -537,7 +537,7 @@ velocity_smoother:
   ros__parameters:
     use_sim_time: False
     smoothing_frequency: 20.0 # default: 20.0 controller_frequencyと同じ値にしたほうがいい
-    scale_velocities: False # default: False Trueにして一回ガタついたので，Falseにしている
+    scale_velocities: True # default: False Trueにして一回ガタついたので，Falseにしている
     feedback: "OPEN_LOOP" # デフォルトは"OPEN_LOOP" CLOSED_LOOPにすると動かない
     max_velocity: [0.50, 0.0, 1.00]
     min_velocity: [-0.50, 0.0, -1.00]
