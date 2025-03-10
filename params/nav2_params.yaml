@@ -305,8 +305,8 @@ controller_server:
 local_costmap:
   local_costmap:
     ros__parameters:
-      update_frequency: 5.0 # コストマップの更新周期[Hz] default: 5.0
-      publish_frequency: 5.0 # default: 5.0
+      update_frequency: 20.0 # コストマップの更新周期[Hz] default: 5.0
+      publish_frequency: 20.0 # default: 5.0
       global_frame: odom
       robot_base_frame: base_footprint
       use_sim_time: False
@@ -332,8 +332,8 @@ local_costmap:
           obstacle_min_range: 0.0
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
-        cost_scaling_factor: 0.7
-        inflation_radius: 0.40 # default: 0.55
+        cost_scaling_factor: 0.70
+        inflation_radius: 0.35 # default: 0.55
       always_send_full_costmap: True
 
 global_costmap:
@@ -407,7 +407,7 @@ global_costmap:
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 0.70
-        inflation_radius: 0.40 # default: 0.55
+        inflation_radius: 0.35 # default: 0.55
       static_layer:
         plugin: "nav2_costmap_2d::StaticLayer"
         map_subscribe_transient_local: True
@@ -436,7 +436,7 @@ planner_server:
     planner_plugins: ["GridBased"]  # 使用するプランナプラグイン
     GridBased:
       plugin: "nav2_smac_planner/SmacPlannerLattice"  # 使用するプランナの種類
-      tolerance: 0.25  # 許容誤差（メートル単位）
+      tolerance: 0.1  # 許容誤差（メートル単位）
       downsample_costmap: False  # コストマップをダウンサンプリングするかどうか(default: False)
       downsampling_factor: 1  # コストマップレイヤーの解像度の倍率
       allow_unknown: True  # 未知の領域を通過することを許可するかどうか
@@ -446,17 +446,17 @@ planner_server:
       max_planning_time: 3.5  # プランニング、スムージング、アップサンプリングの最大時間（秒単位）
       motion_model_for_search: "DUBIN"  # 使用するモーションモデル（Hybrid Dubin, Reeds-Shepp）
       cost_travel_multiplier: 2.0  # 高コスト領域を避けるためのコスト乗数
-      angle_quantization_bins: 64  # 角度の量子化ビンの数（2Dノードの場合は1）
-      analytic_expansion_ratio: 3.5  # アナリティック展開の比率
-      analytic_expansion_max_length: 3.0  # アナリティック展開の最大長さ（メートル単位）
+      angle_quantization_bins: 72  # 角度の量子化ビンの数（2Dノードの場合は1）default: 64 -> 72
+      analytic_expansion_ratio: 4.0  # アナリティック展開の比率 default: 3.5 -> 4.0
+      analytic_expansion_max_length: 3.5  # アナリティック展開の最大長さ（メートル単位）default: 3.0 -> 3.5
       analytic_expansion_max_cost: 200  # アナリティック展開の最大コスト
       analytic_expansion_max_cost_override: False  # ゴールに近い場合に最大コスト設定を上書きするかどうか
       minimum_turning_radius: 0.1  # 最小旋回半径（メートル単位）
       reverse_penalty: 1.5  # 逆行動のペナルティ default: 2.1
-      change_penalty: 0.0  # 方向転換のペナルティ
-      non_straight_penalty: 1.20  # 非直線行動のペナルティ
-      cost_penalty: 5.0  # 高コスト領域のペナルティ 2.0 -> 5.0
-      retrospective_penalty: 0.025  # 後方展開のペナルティ
+      change_penalty: 0.2  # 方向転換のペナルティ
+      non_straight_penalty: 0.80  # 非直線行動のペナルティ
+      cost_penalty: 6.0  # 高コスト領域のペナルティ 2.0 -> 5.0
+      retrospective_penalty: 0.01  # 後方展開のペナルティ default: 0.025
       rotation_penalty: 0.0  # その場回転のペナルティ
       lookup_table_size: 10.0  # ルックアップテーブルのサイズ（メートル単位） default: 20.0
       cache_obstacle_heuristic: True  # 障害物ヒューリスティックのキャッシュ
@@ -464,10 +464,10 @@ planner_server:
       smooth_path: True  # パスをスムーズにするかどうか
       debug_visualizations: False  # デバッグ用の可視化を行うかどうか
       smoother:
-        max_iterations: 1000  # スムージングの最大反復回数
-        w_smooth: 0.3  # スムージングの重み
-        w_data: 0.2  # データの重み
-        tolerance: 1.0e-10  # 許容誤差
+        max_iterations: 2000  # スムージングの最大反復回数 default: 1000 -> 2000
+        w_smooth: 0.5  # スムージングの重み default: 0.3 -> 0.45
+        w_data: 0.10  # データの重み default: 0.2 -> 0.15
+        tolerance: 1.0e-11  # 許容誤差 default: 1.0e-10 -> 1.0e-11
         do_refinement: True  # 精緻化を行うかどうか
 
 # planner_server:
