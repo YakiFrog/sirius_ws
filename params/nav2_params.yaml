@@ -128,9 +128,9 @@ controller_server:
       batch_size: 500
       vx_std: 0.15 # default: 0.2 -> 0.1
       vy_std: 0.0
-      wz_std: 0.40 # default: 0.4 -> 0.1
+      wz_std: 0.50 # default: 0.4 -> 0.1
       vx_max: 0.50 # default: 0.50 -> 0.40
-      vx_min: -0.10 # default: -0.35 -> -0.40
+      vx_min: -0.15 # default: -0.35 -> -0.40
       vy_max: 0.00
       wz_max: 1.00 # default: 1.9 -> 0.4
       ax_max: 0.70 # default: 3.0 -> 0.50
@@ -451,7 +451,7 @@ planner_server:
       analytic_expansion_max_length: 3.5  # アナリティック展開の最大長さ（メートル単位）default: 3.0 -> 3.5
       analytic_expansion_max_cost: 200  # アナリティック展開の最大コスト
       analytic_expansion_max_cost_override: False  # ゴールに近い場合に最大コスト設定を上書きするかどうか
-      minimum_turning_radius: 0.1  # 最小旋回半径（メートル単位）
+      minimum_turning_radius: 0.0  # 最小旋回半径（メートル単位）
       reverse_penalty: 2.0  # 逆行動のペナルティ default: 2.1
       change_penalty: 0.2  # 方向転換のペナルティ
       non_straight_penalty: 0.80  # 非直線行動のペナルティ
