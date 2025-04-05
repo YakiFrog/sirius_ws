@@ -314,7 +314,7 @@ local_costmap:
       width: 3 # ローカルコストマップのサイズ[m]
       height: 3 # ローカルコストマップのサイズ[m]
       resolution: 0.05
-      footprint: "[ [0.50, 0.35], [0.50, -0.35], [-0.75, -0.35], [-0.75, 0.35] ]" # ロボットの形状
+      footprint: "[ [0.50, 0.40], [0.50, -0.40], [-0.75, -0.40], [-0.75, 0.40] ]" # ロボットの形状
       plugins: ["obstacle_layer", "inflation_layer"]
       obstacle_layer:
         plugin: "nav2_costmap_2d::ObstacleLayer"
@@ -346,7 +346,7 @@ global_costmap:
       use_sim_time: False
       resolution: 0.05
       track_unknown_space: True
-      footprint: "[ [0.50, 0.35], [0.50, -0.35], [-0.75, -0.35], [-0.75, 0.35] ]" # ロボットの形状
+      footprint: "[ [0.50, 0.40], [0.50, -0.40], [-0.75, -0.40], [-0.75, 0.40] ]" # ロボットの形状
       plugins: ["static_layer", "stvl_layer", "inflation_layer", "obstacle_layer"]
       stvl_layer:
         plugin: "spatio_temporal_voxel_layer/SpatioTemporalVoxelLayer" # 時空間ボクセルレイヤープラグイン
