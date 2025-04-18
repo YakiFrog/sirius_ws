@@ -13,7 +13,7 @@ slam_toolbox:
     odom_frame: odom  # オドメトリのフレーム名
     map_frame: map  # 地図のフレーム名
     base_frame: base_footprint  # ベースフレーム名（ロボットの基準となるフレーム）
-    scan_topic: /scan  # スキャンデータのトピック名
+    scan_topic: /hokuyo_scan  # スキャンデータのトピック名
     use_map_saver: true  # マップ保存機能を有効にするか
     mode: mapping  # モード設定（地図作成モード`mapping`、自己位置推定モード`localization`）
 
