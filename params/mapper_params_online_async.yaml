@@ -1,0 +1,73 @@
+slam_toolbox:
+  ros__parameters:
+
+    # プラグインパラメータ
+    solver_plugin: solver_plugins::CeresSolver  # Ceresソルバーを使用
+    ceres_linear_solver: SPARSE_NORMAL_CHOLESKY  # 線形ソルバータイプ
+    ceres_preconditioner: SCHUR_JACOBI  # 事前条件法
+    ceres_trust_strategy: LEVENBERG_MARQUARDT  # 信頼領域戦略
+    ceres_dogleg_type: TRADITIONAL_DOGLEG  # ドッグレッグ法のタイプ
+    ceres_loss_function: None  # ロス関数（無し）
+
+    # ROSパラメータ
+    odom_frame: odom  # オドメトリのフレーム名
+    map_frame: map  # 地図のフレーム名
+    base_frame: base_footprint  # ベースフレーム名（ロボットの基準となるフレーム）
+    scan_topic: /hokuyo_scan  # スキャンデータのトピック名
+    use_map_saver: true  # マップ保存機能を有効にするか
+    mode: mapping  # モード設定（地図作成モード`mapping`、自己位置推定モード`localization`）
+
+    # すぐにマップ作成を続行する場合の開始位置設定（ポーズまたはドック位置）
+    #map_file_name: test_steve  # 使用するマップのファイル名
+    # map_start_pose: [0.0, 0.0, 0.0]  # 開始時のマップ上のポーズ（位置と向き）
+    #map_start_at_dock: true  # ドックでの開始を指定（ポーズと競合）
+
+    debug_logging: false  # デバッグログを有効にするか
+    throttle_scans: 0  # スキャンデータのスロットル値（1秒あたりに処理するスキャン数）
+    transform_publish_period: 0.02  # オドメトリの変換を発行する周期（秒）（デフォルト：0.02秒）0.02 -> 0.01
+    map_update_interval: 3.0  # マップ更新のインターバル（秒）（デフォルト：５秒 -> 3 -> 1.5 -> ✕1.0（テレオペで停止したりする））
+    resolution: 0.05  # 地図の解像度（メートル単位）
+    min_laser_range: 0.0  # 最小レーザー範囲（ラスター化するための設定）
+    max_laser_range: 100.0  # 最大レーザー範囲（ラスター化するための設定）
+    minimum_time_interval: 0.15  # 最小時間間隔（スキャン間の時間間隔）（デフォルト：0.5秒 -> 0.3 -> 0.15）
+    transform_timeout: 0.2  # 変換のタイムアウト時間（秒）
+    tf_buffer_duration: 30.0  # TFバッファの保存期間（秒）
+    stack_size_to_use: 100000000  # 大きな地図をシリアライズするために必要なスタックサイズ（デフォルト：40MB）
+    enable_interactive_mode: true  # インタラクティブモードを有効にするか
+
+    # 一般的なパラメータ
+    use_scan_matching: true  # スキャンマッチングを使用するか
+    use_scan_barycenter: true  # スキャンの重心を使用するか
+    minimum_travel_distance: 0.3  # 最小移動距離（メートル）(デフォルト：0.5m)
+    minimum_travel_heading: 0.3  # 最小移動方向変更（ラジアン）(デフォルト：0.5rad)
+    scan_buffer_size: 20  # スキャンデータのバッファサイズ(デフォルト：10)
+    scan_buffer_maximum_scan_distance: 20.0  # スキャンデータの最大距離（メートル）(デフォルト：10m)
+    link_match_minimum_response_fine: 0.1  # 細かいリンクマッチングの最小反応値
+    link_scan_maximum_distance: 1.5  # リンクスキャンの最大距離
+    loop_search_maximum_distance: 3.0  # ループ検索の最大距離
+    do_loop_closing: true  # ループクロージングを行うか
+    loop_match_minimum_chain_size: 10  # ループクロージングの最小チェーンサイズ
+    loop_match_maximum_variance_coarse: 3.0  # 粗いループマッチングの最大分散
+    loop_match_minimum_response_coarse: 0.35  # 粗いループマッチングの最小反応
+    loop_match_minimum_response_fine: 0.45  # 細かいループマッチングの最小反応
+
+    # 相関パラメータ - 相関探索空間の次元
+    correlation_search_space_dimension: 0.5  # 相関探索空間の次元（メートル）
+    correlation_search_space_resolution: 0.01  # 相関探索空間の解像度（メートル）
+    correlation_search_space_smear_deviation: 0.1  # 相関空間のズレの許容範囲
+
+    # 相関パラメータ - ループクロージャパラメータ
+    loop_search_space_dimension: 8.0  # ループクロージャ探索空間の次元（メートル）
+    loop_search_space_resolution: 0.05  # ループクロージャ探索空間の解像度（メートル）
+    loop_search_space_smear_deviation: 0.03  # ループクロージャ探索空間のズレの許容範囲
+
+    # スキャンマッチャパラメータ
+    distance_variance_penalty: 0.5  # 距離の分散ペナルティ
+    angle_variance_penalty: 1.0  # 角度の分散ペナルティ
+
+    fine_search_angle_offset: 0.00349  # 細かい検索の角度オフセット
+    coarse_search_angle_offset: 0.349   # 粗い検索の角度オフセット
+    coarse_angle_resolution: 0.0349     # 粗い検索の角度解像度
+    minimum_angle_penalty: 0.9          # 最小角度ペナルティ
+    minimum_distance_penalty: 0.5       # 最小距離ペナルティ
+    use_response_expansion: true        # 反応拡張を使用するか
