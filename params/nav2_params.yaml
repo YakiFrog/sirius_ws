@@ -372,11 +372,11 @@ planner_server:
       analytic_expansion_max_length: 3.5  # アナリティック展開の最大長さ（メートル単位）default: 3.0 -> 3.5
       analytic_expansion_max_cost: 200  # アナリティック展開の最大コスト
       analytic_expansion_max_cost_override: False  # ゴールに近い場合に最大コスト設定を上書きするかどうか
-      minimum_turning_radius: 0.05  # 最小旋回半径（メートル単位）(ギシギシいってなかなか曲がらないときがあるから0.25 -> 0.00にしてみた)
+      minimum_turning_radius: 0.00  # 最小旋回半径（メートル単位）(ギシギシいってなかなか曲がらないときがあるから0.25 -> 0.00にしてみた)
       reverse_penalty: 2.0  # 逆行動のペナルティ default: 2.1
-      change_penalty: 0.2  # 方向転換のペナルティ
+      change_penalty: 0.4  # 方向転換のペナルティ
       non_straight_penalty: 0.80  # 非直線行動のペナルティ
-      cost_penalty: 60.0  # 高コスト領域のペナルティ 2.0 -> 5.0
+      cost_penalty: 60.0  # 高コスト領域のペナルティ 2.0 -> 5.0　効果があるかわからない
       retrospective_penalty: 0.01  # 後方展開のペナルティ default: 0.025
       rotation_penalty: 0.0  # その場回転のペナルティ
       lookup_table_size: 10.0  # ルックアップテーブルのサイズ（メートル単位） default: 20.0
