@@ -125,22 +125,22 @@ controller_server:
       plugin: "nav2_mppi_controller::MPPIController"
       time_steps: 60
       model_dt: 0.050 # default: 0.05
-      batch_size: 1000
+      batch_size: 2500
       vx_std: 0.15 # default: 0.2 -> 0.1
       vy_std: 0.0
-      wz_std: 0.50 # default: 0.4 -> 0.1
+      wz_std: 0.50 # default: 0.4 -> 0.5 -> 0.6
       vx_max: 0.50 # default: 0.50 -> 0.40
-      vx_min: -0.15 # default: -0.35 -> -0.40
+      vx_min: -0.30 # default: -0.35 -> -0.40
       vy_max: 0.00
       wz_max: 1.00 # default: 1.9 -> 0.4
       ax_max: 0.70 # default: 3.0 -> 0.50
-      ax_min: -0.70 # default: -3.0 -> -0.50
+      ax_min: -0.50 # default: -3.0 -> -0.50
       ay_max: 0.00
       az_max: 1.50 # default: 3.5 -> 0.35
-      iteration_count: 1
+      iteration_count: 4
       prune_distance: 1.0
       transform_tolerance: 5.0 # default: 0.1 -> 0.2
-      temperature: 0.3
+      temperature: 0.5 # default: 0.3 経路選択のランダム性を決定するパラメータ
       gamma: 0.015
       motion_model: "DiffDrive"
       visualize: False # default: False -> trueにするとパフォーマンスが落ちる
@@ -181,7 +181,7 @@ controller_server:
         collision_margin_distance: 0.3
         near_goal_distance: 0.5
         inflation_radius: 0.45 # (only in Humble)
-        cost_scaling_factor: 0.5 # (only in Humble)
+        cost_scaling_factor: 0.4 # (only in Humble)
       CostCritic:
         enabled: True
         cost_power: 1
@@ -333,6 +333,7 @@ global_costmap:
       static_layer:
         plugin: "nav2_costmap_2d::StaticLayer"
         map_subscribe_transient_local: True
+        clearing_after_enabled: True
       always_send_full_costmap: True
 
 map_server:
@@ -366,22 +367,22 @@ planner_server:
       terminal_checking_interval: 5000  # ゴールがキャンセルされたかプランナがタイムアウトしたかをチェックする間隔（反復回数）
       max_planning_time: 3.5  # プランニング、スムージング、アップサンプリングの最大時間（秒単位）
       motion_model_for_search: "DUBIN"  # 使用するモーションモデル（Hybrid Dubin, Reeds-Shepp）
-      cost_travel_multiplier: 6.0  # 高コスト領域を避けるためのコスト乗数 2.0 -> 3.5
+      cost_travel_multiplier: 10.0  # 高コスト領域を避けるためのコスト乗数 2.0 -> 6.0 -> 10.0 迂回しず義内容に
       angle_quantization_bins: 72  # 角度の量子化ビンの数（2Dノードの場合は1）default: 64 -> 72
       analytic_expansion_ratio: 4.0  # アナリティック展開の比率 default: 3.5 -> 4.0
       analytic_expansion_max_length: 3.5  # アナリティック展開の最大長さ（メートル単位）default: 3.0 -> 3.5
       analytic_expansion_max_cost: 200  # アナリティック展開の最大コスト
       analytic_expansion_max_cost_override: False  # ゴールに近い場合に最大コスト設定を上書きするかどうか
       minimum_turning_radius: 0.00  # 最小旋回半径（メートル単位）(ギシギシいってなかなか曲がらないときがあるから0.25 -> 0.00にしてみた)
-      reverse_penalty: 2.0  # 逆行動のペナルティ default: 2.1
-      change_penalty: 0.4  # 方向転換のペナルティ
-      non_straight_penalty: 0.80  # 非直線行動のペナルティ
+      reverse_penalty: 20.0  # 逆行動のペナルティ default: 2.1
+      change_penalty: 0.6  # 方向転換のペナルティ default: 0.2
+      non_straight_penalty: 0.80  # 非直線行動のペナルティ default: 0.80 -> 0.40 (非直線経路を選びやすくする)
       cost_penalty: 60.0  # 高コスト領域のペナルティ 2.0 -> 5.0　効果があるかわからない
       retrospective_penalty: 0.01  # 後方展開のペナルティ default: 0.025
       rotation_penalty: 0.0  # その場回転のペナルティ
       lookup_table_size: 10.0  # ルックアップテーブルのサイズ（メートル単位） default: 20.0
       cache_obstacle_heuristic: True  # 障害物ヒューリスティックのキャッシュ
-      allow_reverse_expansion: True  # 逆方向の展開を許可するかどうか
+      allow_reverse_expansion: False  # 逆方向の展開を許可するかどうか
       smooth_path: True  # パスをスムーズにするかどうか
       debug_visualizations: False  # デバッグ用の可視化を行うかどうか
       smoother:
