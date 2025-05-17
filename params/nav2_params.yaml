@@ -45,7 +45,7 @@ amcl:
     z_max: 0.05
     z_rand: 0.5
     z_short: 0.05
-    scan_topic: scan2 # スキャンデータのトピック名
+    scan_topic: scan3 # スキャンデータのトピック名
 
 bt_navigator:
   ros__parameters:
@@ -377,7 +377,7 @@ planner_server:
       reverse_penalty: 20.0  # 逆行動のペナルティ default: 2.1
       change_penalty: 0.6  # 方向転換のペナルティ default: 0.2
       non_straight_penalty: 0.80  # 非直線行動のペナルティ default: 0.80 -> 0.40 (非直線経路を選びやすくする)
-      cost_penalty: 60.0  # 高コスト領域のペナルティ 2.0 -> 5.0　効果があるかわからない
+      cost_penalty: 0.1  # 高コスト領域のペナルティ 2.0 -> 5.0　効果があるかわからない
       retrospective_penalty: 0.01  # 後方展開のペナルティ default: 0.025
       rotation_penalty: 0.0  # その場回転のペナルティ
       lookup_table_size: 10.0  # ルックアップテーブルのサイズ（メートル単位） default: 20.0
