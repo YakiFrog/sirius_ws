@@ -38,7 +38,7 @@ amcl:
     save_pose_rate: 0.5
     sigma_hit: 0.2
     tf_broadcast: True
-    transform_tolerance: 0.2 # 1.0
+    transform_tolerance: 0.5 # 1.0
     update_min_a: 0.1 # パーティクルフィルタの更新の閾値 default: 0.2
     update_min_d: 0.1 # パーティクルフィルタの更新の閾値 default: 0.25
     z_hit: 0.5
@@ -180,7 +180,7 @@ controller_server:
         collision_cost: 10000.0
         collision_margin_distance: 0.3
         near_goal_distance: 0.5
-        inflation_radius: 0.45 # (only in Humble)
+        inflation_radius: 0.50 # (only in Humble)
         cost_scaling_factor: 0.4 # (only in Humble)
       CostCritic:
         enabled: True
@@ -255,7 +255,7 @@ local_costmap:
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 0.4
-        inflation_radius: 0.45 # default: 0.55
+        inflation_radius: 0.50 # default: 0.55
       always_send_full_costmap: True
 
 global_costmap:
@@ -282,7 +282,7 @@ global_costmap:
         combination_method: 1 # レイヤー結合方法（1=最大値、0=上書き）
         origin_z: 0.0 # Z原点（メートル）
         publish_voxel_map: true # ボクセルマップを公開するかどうか（デフォルトはオフ）
-        transform_tolerance: 0.2 # 変換許容時間（秒）
+        transform_tolerance: 0.5 # 変換許容時間（秒）
         mapping_mode: false # マッピングモード（デフォルトはオフ、ナビゲーション以外の用途でマップを保存）
         map_save_duration: 60.0 # マップの自動保存間隔（秒）、デフォルトは60秒
         observation_sources: rgbd1_mark rgbd1_clear # 観測ソース
@@ -329,7 +329,7 @@ global_costmap:
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 0.4
-        inflation_radius: 0.45 # default: 0.55
+        inflation_radius: 0.50 # default: 0.55
       static_layer:
         plugin: "nav2_costmap_2d::StaticLayer"
         map_subscribe_transient_local: True
@@ -368,15 +368,15 @@ planner_server:
       max_planning_time: 3.5  # プランニング、スムージング、アップサンプリングの最大時間（秒単位）
       motion_model_for_search: "DUBIN"  # 使用するモーションモデル（Hybrid Dubin, Reeds-Shepp）
       cost_travel_multiplier: 10.0  # 高コスト領域を避けるためのコスト乗数 2.0 -> 6.0 -> 10.0 迂回しず義内容に
-      angle_quantization_bins: 72  # 角度の量子化ビンの数（2Dノードの場合は1）default: 64 -> 72
-      analytic_expansion_ratio: 4.0  # アナリティック展開の比率 default: 3.5 -> 4.0
+      angle_quantization_bins: 96  # 角度の量子化ビンの数（2Dノードの場合は1）default: 64 -> 72 -> 96
+      analytic_expansion_ratio: 3.0  # アナリティック展開の比率 default: 3.5 -> 4.0
       analytic_expansion_max_length: 3.5  # アナリティック展開の最大長さ（メートル単位）default: 3.0 -> 3.5
       analytic_expansion_max_cost: 200  # アナリティック展開の最大コスト
       analytic_expansion_max_cost_override: False  # ゴールに近い場合に最大コスト設定を上書きするかどうか
       minimum_turning_radius: 0.00  # 最小旋回半径（メートル単位）(ギシギシいってなかなか曲がらないときがあるから0.25 -> 0.00にしてみた)
       reverse_penalty: 20.0  # 逆行動のペナルティ default: 2.1
-      change_penalty: 0.6  # 方向転換のペナルティ default: 0.2
-      non_straight_penalty: 0.80  # 非直線行動のペナルティ default: 0.80 -> 0.40 (非直線経路を選びやすくする)
+      change_penalty: 0.3  # 方向転換のペナルティ default: 0.2
+      non_straight_penalty: 0.50  # 非直線行動のペナルティ default: 0.80 -> 0.40 (非直線経路を選びやすくする)
       cost_penalty: 0.1  # 高コスト領域のペナルティ 2.0 -> 5.0　効果があるかわからない
       retrospective_penalty: 0.01  # 後方展開のペナルティ default: 0.025
       rotation_penalty: 0.0  # その場回転のペナルティ
@@ -421,7 +421,7 @@ behavior_server:
       plugin: "nav2_behaviors/AssistedTeleop"
     global_frame: odom
     robot_base_frame: base_footprint # default: base_link
-    transform_tolerance: 0.2
+    transform_tolerance: 0.5
     use_sim_time: False
     simulate_ahead_time: 2.0 # どんくらい先まで予測するか[s] default: 2.0
     max_rotational_vel: 0.40
