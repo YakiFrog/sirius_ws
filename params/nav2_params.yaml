@@ -236,7 +236,7 @@ local_costmap:
       width: 5 # ローカルコストマップのサイズ[m]
       height: 5 # ローカルコストマップのサイズ[m]
       resolution: 0.05
-      footprint: "[ [0.70, 0.45], [0.70, -0.45], [-0.75, -0.40], [-0.75, 0.40] ]" # ロボットの形状
+      footprint: "[ [0.80, 0.45], [0.80, -0.45], [-0.75, -0.40], [-0.75, 0.40] ]" # ロボットの形状
       plugins: ["obstacle_layer", "inflation_layer"]
       obstacle_layer:
         plugin: "nav2_costmap_2d::ObstacleLayer"
@@ -268,7 +268,7 @@ global_costmap:
       use_sim_time: False
       resolution: 0.05
       track_unknown_space: True
-      footprint: "[ [0.70, 0.45], [0.70, -0.45], [-0.75, -0.40], [-0.75, 0.40] ]" # ロボットの形状
+      footprint: "[ [0.80, 0.45], [0.80, -0.45], [-0.75, -0.40], [-0.75, 0.40] ]" # ロボットの形状
       plugins: ["static_layer", "stvl_layer", "inflation_layer", "obstacle_layer"]
       stvl_layer:
         plugin: "spatio_temporal_voxel_layer/SpatioTemporalVoxelLayer" # 時空間ボクセルレイヤープラグイン
@@ -375,14 +375,14 @@ planner_server:
       analytic_expansion_max_cost_override: False  # ゴールに近い場合に最大コスト設定を上書きするかどうか
       minimum_turning_radius: 0.00  # 最小旋回半径（メートル単位）(ギシギシいってなかなか曲がらないときがあるから0.25 -> 0.00にしてみた)
       reverse_penalty: 20.0  # 逆行動のペナルティ default: 2.1
-      change_penalty: 0.3  # 方向転換のペナルティ default: 0.2
-      non_straight_penalty: 0.50  # 非直線行動のペナルティ default: 0.80 -> 0.40 (非直線経路を選びやすくする)
+      change_penalty: 0.2  # 方向転換のペナルティ default: 0.2
+      non_straight_penalty: 0.40  # 非直線行動のペナルティ default: 0.80 -> 0.40 (非直線経路を選びやすくする)
       cost_penalty: 0.1  # 高コスト領域のペナルティ 2.0 -> 5.0　効果があるかわからない
       retrospective_penalty: 0.01  # 後方展開のペナルティ default: 0.025
       rotation_penalty: 0.0  # その場回転のペナルティ
       lookup_table_size: 10.0  # ルックアップテーブルのサイズ（メートル単位） default: 20.0
       cache_obstacle_heuristic: True  # 障害物ヒューリスティックのキャッシュ
-      allow_reverse_expansion: False  # 逆方向の展開を許可するかどうか
+      allow_reverse_expansion: True  # 逆方向の展開を許可するかどうか
       smooth_path: True  # パスをスムーズにするかどうか
       debug_visualizations: False  # デバッグ用の可視化を行うかどうか
       smoother:
