@@ -3,11 +3,11 @@ amcl:
     use_sim_time: False
 
     # ロボットの動作モデルのパラメータ
-    alpha1: 0.3 # ロールのノイズの標準偏差
-    alpha2: 0.3 # ピッチのノイズの標準偏差
-    alpha3: 0.3 # ヨーのノイズの標準偏差
-    alpha4: 0.3 # 進行方向のノイズの標準偏差
-    alpha5: 0.3 # 進行方向のノイズの標準偏差
+    alpha1: 0.2 # ロールのノイズの標準偏差
+    alpha2: 0.2 # ピッチのノイズの標準偏差
+    alpha3: 0.2 # ヨーのノイズの標準偏差
+    alpha4: 0.2 # 進行方向のノイズの標準偏差
+    alpha5: 0.2 # 進行方向のノイズの標準偏差
     base_frame_id: "base_footprint"
     global_frame_id: "map"
 
@@ -24,12 +24,12 @@ amcl:
     laser_model_type: "likelihood_field"
 
     # パーティクルフィルタのパラメータ
-    max_beams: 60 # ビームの数 default: 60
-    max_particles: 2500 # パーティクルの数 default: 2000
+    max_beams: 120 # ビームの数 default: 60
+    max_particles: 3000 # パーティクルの数 default: 2000
     min_particles: 900 # パーティクルの最小数 default: 500 -> 400
 
     odom_frame_id: "odom"
-    pf_err: 0.05
+    pf_err: 0.01
     pf_z: 0.99
     recovery_alpha_fast: 0.2 # リカバリのα値 0.4 -> 0.2 0.4がでかすぎた
     recovery_alpha_slow: 0.2 # リカバリのα値 いれるなら，0.1以上じゃないと動かない
@@ -181,7 +181,7 @@ controller_server:
         collision_margin_distance: 0.3
         near_goal_distance: 0.5
         inflation_radius: 0.45 # (only in Humble)
-        cost_scaling_factor: 0.4 # (only in Humble)
+        cost_scaling_factor: 0.3 # (only in Humble)
       CostCritic:
         enabled: True
         cost_power: 1
@@ -254,7 +254,7 @@ local_costmap:
           obstacle_min_range: 0.0
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
-        cost_scaling_factor: 0.4
+        cost_scaling_factor: 0.3
         inflation_radius: 0.45 # default: 0.55
       always_send_full_costmap: True
 
@@ -328,7 +328,7 @@ global_costmap:
           obstacle_min_range: 0.0
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
-        cost_scaling_factor: 0.4
+        cost_scaling_factor: 0.3
         inflation_radius: 0.45 # default: 0.55
       static_layer:
         plugin: "nav2_costmap_2d::StaticLayer"
@@ -358,7 +358,7 @@ planner_server:
     planner_plugins: ["GridBased"]  # 使用するプランナプラグイン
     GridBased:
       plugin: "nav2_smac_planner/SmacPlannerLattice"  # 使用するプランナの種類
-      tolerance: 0.30  # 許容誤差（メートル単位）
+      tolerance: 0.20  # 許容誤差（メートル単位）
       downsample_costmap: False  # コストマップをダウンサンプリングするかどうか(default: False)
       downsampling_factor: 1  # コストマップレイヤーの解像度の倍率
       allow_unknown: True  # 未知の領域を通過することを許可するかどうか
@@ -367,16 +367,16 @@ planner_server:
       terminal_checking_interval: 5000  # ゴールがキャンセルされたかプランナがタイムアウトしたかをチェックする間隔（反復回数）
       max_planning_time: 3.5  # プランニング、スムージング、アップサンプリングの最大時間（秒単位）
       motion_model_for_search: "DUBIN"  # 使用するモーションモデル（Hybrid Dubin, Reeds-Shepp）
-      cost_travel_multiplier: 10.0  # 高コスト領域を避けるためのコスト乗数 2.0 -> 6.0 -> 10.0 迂回しず義内容に
+      cost_travel_multiplier: 8.0  # 高コスト領域を避けるためのコスト乗数 2.0 -> 6.0 -> 10.0 迂回しず義内容に
       angle_quantization_bins: 96  # 角度の量子化ビンの数（2Dノードの場合は1）default: 64 -> 72 -> 96
-      analytic_expansion_ratio: 3.0  # アナリティック展開の比率 default: 3.5 -> 4.0
-      analytic_expansion_max_length: 3.5  # アナリティック展開の最大長さ（メートル単位）default: 3.0 -> 3.5
+      analytic_expansion_ratio: 2.5  # アナリティック展開の比率 default: 3.5 -> 4.0
+      analytic_expansion_max_length: 5.0  # アナリティック展開の最大長さ（メートル単位）default: 3.0 -> 3.5
       analytic_expansion_max_cost: 200  # アナリティック展開の最大コスト
       analytic_expansion_max_cost_override: False  # ゴールに近い場合に最大コスト設定を上書きするかどうか
       minimum_turning_radius: 0.00  # 最小旋回半径（メートル単位）(ギシギシいってなかなか曲がらないときがあるから0.25 -> 0.00にしてみた)
       reverse_penalty: 20.0  # 逆行動のペナルティ default: 2.1
-      change_penalty: 0.2  # 方向転換のペナルティ default: 0.2
-      non_straight_penalty: 0.40  # 非直線行動のペナルティ default: 0.80 -> 0.40 (非直線経路を選びやすくする)
+      change_penalty: 0.3  # 方向転換のペナルティ default: 0.2
+      non_straight_penalty: 0.80  # 非直線行動のペナルティ default: 0.80 -> 0.40 (非直線経路を選びやすくする)
       cost_penalty: 0.1  # 高コスト領域のペナルティ 2.0 -> 5.0　効果があるかわからない
       retrospective_penalty: 0.01  # 後方展開のペナルティ default: 0.025
       rotation_penalty: 0.0  # その場回転のペナルティ
@@ -386,10 +386,10 @@ planner_server:
       smooth_path: True  # パスをスムーズにするかどうか
       debug_visualizations: False  # デバッグ用の可視化を行うかどうか
       smoother:
-        max_iterations: 2000  # スムージングの最大反復回数 default: 1000 -> 2000
-        w_smooth: 0.5  # スムージングの重み default: 0.3 -> 0.45
-        w_data: 0.10  # データの重み default: 0.2 -> 0.15
-        tolerance: 1.0e-11  # 許容誤差 default: 1.0e-10 -> 1.0e-11
+        max_iterations: 3000  # スムージングの最大反復回数 default: 1000 -> 2000
+        w_smooth: 0.8  # スムージングの重み default: 0.3 -> 0.45
+        w_data: 0.05 # データの重み default: 0.2 -> 0.15
+        tolerance: 1.0e-12  # 許容誤差 default: 1.0e-10 -> 1.0e-11
         do_refinement: True  # 精緻化を行うかどうか
 
 smoother_server:
@@ -399,16 +399,17 @@ smoother_server:
     simple_smoother:
       plugin: "nav2_smoother::SimpleSmoother"
       tolerance: 1.0e-10
-      max_its: 1000
+      max_its: 1500
       do_refinement: True
 
 behavior_server:
   ros__parameters:
     costmap_topic: local_costmap/costmap_raw
     footprint_topic: local_costmap/published_footprint
-    cycle_frequency: 10.0 # (Hz) default: 10
+    cycle_frequency: 5.0 # (Hz) default: 10
     behavior_plugins:
       ["spin", "backup", "drive_on_heading", "assisted_teleop", "wait"]
+      # ["wait"]
     spin:
       plugin: "nav2_behaviors/Spin"
     backup:
@@ -423,7 +424,7 @@ behavior_server:
     robot_base_frame: base_footprint # default: base_link
     transform_tolerance: 0.5
     use_sim_time: False
-    simulate_ahead_time: 2.0 # どんくらい先まで予測するか[s] default: 2.0
+    simulate_ahead_time: 3.0 # どんくらい先まで予測するか[s] default: 2.0
     max_rotational_vel: 0.40
     min_rotational_vel: 0.05
     rotational_acc_lim: 0.15
