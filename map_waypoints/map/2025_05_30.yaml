@@ -1,0 +1,7 @@
+free_thresh: 0.25
+image: 2025_05_30.pgm
+mode: trinary
+negate: 0
+occupied_thresh: 0.65
+origin: [-3.5, -3.5, 0]
+resolution: 0.05
