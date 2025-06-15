@@ -3,13 +3,22 @@ amcl:
     use_sim_time: False
 
     # ロボットの動作モデルのパラメータ
-    alpha1: 0.2 # ロールのノイズの標準偏差
-    alpha2: 0.2 # ピッチのノイズの標準偏差
-    alpha3: 0.2 # ヨーのノイズの標準偏差
-    alpha4: 0.2 # 進行方向のノイズの標準偏差
-    alpha5: 0.2 # 進行方向のノイズの標準偏差
+    alpha1: 0.08 # ロールのノイズの標準偏差（回転によるノイズを減らす）
+    alpha2: 0.08 # ピッチのノイズの標準偏差（並進によるノイズを減らす）
+    alpha3: 0.20 # ヨーのノイズの標準偏差（並進による回転ノイズを少し増やす）
+    alpha4: 0.08 # 進行方向のノイズの標準偏差（回転による並進ノイズを減らす）
+    alpha5: 0.2 # 進行方向のノイズの標準偏差（オムニ用)
     base_frame_id: "base_footprint"
     global_frame_id: "map"
+
+    # 初期姿勢設定（前方向への偏りを作る）
+    set_initial_pose: true # 初期姿勢設定を有効化
+    always_reset_initial_pose: false # 初期姿勢を常にリセットするかどうか
+    initial_pose:
+      x: 0.0
+      y: 0.0
+      z: 0.0
+      yaw: 0.0
 
     # ビームスキップのパラメータ
     beam_skip_distance: 0.5 # ビームスキップの距離[m]
@@ -24,26 +33,26 @@ amcl:
     laser_model_type: "likelihood_field"
 
     # パーティクルフィルタのパラメータ
-    max_beams: 120 # ビームの数 default: 60
-    max_particles: 3000 # パーティクルの数 default: 2000
-    min_particles: 900 # パーティクルの最小数 default: 500 -> 400
+    max_beams: 180 # ビームの数 default: 60 -> 120 -> 180 高密度
+    max_particles: 3000 # パーティクルの数 default: 2000 -> 3000
+    min_particles: 900 # パーティクルの最小数 default: 500 -> 400 -> 900
 
     odom_frame_id: "odom"
     pf_err: 0.01
     pf_z: 0.99
-    recovery_alpha_fast: 0.2 # リカバリのα値 0.4 -> 0.2 0.4がでかすぎた
-    recovery_alpha_slow: 0.2 # リカバリのα値 いれるなら，0.1以上じゃないと動かない
+    recovery_alpha_fast: 0.1 # リカバリのα値 0.4 -> 0.2 0.4がでかすぎた -> 0.1
+    recovery_alpha_slow: 0.1 # リカバリのα値 いれるなら，0.1以上じゃないと動かない -> 0.1
     resample_interval: 1 # リサンプリングの間隔 default: 1
     robot_model_type: "nav2_amcl::DifferentialMotionModel"
     save_pose_rate: 0.5
-    sigma_hit: 0.2
+    sigma_hit: 0.1 # ヒットの標準偏差 default: 0.2 -> 0.1 (0615)
     tf_broadcast: True
     transform_tolerance: 0.5 # 1.0
     update_min_a: 0.1 # パーティクルフィルタの更新の閾値 default: 0.2
     update_min_d: 0.1 # パーティクルフィルタの更新の閾値 default: 0.25
-    z_hit: 0.5
+    z_hit: 0.7 # ヒットの確率 default: 0.5
     z_max: 0.05
-    z_rand: 0.5
+    z_rand: 0.2 # ランダムな確率 default: 0.5
     z_short: 0.05
     scan_topic: scan3 # スキャンデータのトピック名
 
