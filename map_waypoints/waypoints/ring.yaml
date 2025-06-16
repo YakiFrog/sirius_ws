@@ -9,8 +9,8 @@ waypoints:
   y: 26.15
   angle_radians: -2.968
 - number: 3
-  x: -10.55
-  y: 23.3
+  x: -15.45
+  y: 23.1
   angle_radians: -2.787
 - number: 4
   x: -18.65
@@ -65,8 +65,8 @@ waypoints:
   y: 17.15
   angle_radians: 0.351
 - number: 17
-  x: -10.4
-  y: 23.4
+  x: -15.45
+  y: 23.05
   angle_radians: 0.091
 - number: 18
   x: 6.7
@@ -80,3 +80,7 @@ waypoints:
   x: 30.6
   y: 36.6
   angle_radians: 0.876
+- number: 21
+  x: 31.1
+  y: 40.75
+  angle_radians: -2.026
