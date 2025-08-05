@@ -97,10 +97,10 @@ class Nav2GoalClient(Node):
     def get_position(self):
         try:
             # 最新のtransformを取得
-            when = self.tfBuffer.get_latest_common_time('map', 'base_link')
+            when = self.tfBuffer.get_latest_common_time('map', 'base_footprint')
             transform = self.tfBuffer.lookup_transform(
                 'map',
-                'base_link',
+                'base_footprint',
                 when
             )
             translation = transform.transform.translation

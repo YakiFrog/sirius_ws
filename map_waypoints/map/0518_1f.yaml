@@ -1,7 +1,0 @@
-free_thresh: 0.25
-image: 0518_1f.pgm
-mode: trinary
-negate: 0
-occupied_thresh: 0.65
-origin: [-22.150000000000002, -35.2, 0]
-resolution: 0.05
