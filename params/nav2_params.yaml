@@ -21,9 +21,9 @@ amcl:
       yaw: 0.0
 
     # ビームスキップのパラメータ
-    beam_skip_distance: 0.3 # ビームスキップの距離[m]
-    beam_skip_error_threshold: 0.8 # ビームスキップのエラー閾値
-    beam_skip_threshold: 0.4 # ビームスキップの閾値
+    beam_skip_distance: 0.3 # ビームスキップの距離[m] レーザービームの測定点が障害物にどれだけ近い場合に「マップと一致している」と判定するかの距離閾値
+    beam_skip_threshold: 0.4 # ビームスキップの閾値　各ビームについて「マップと一致したパーティクルの割合」がどの程度以上の場合にそのビームを位置推定の計算に使用するかを決定
+    beam_skip_error_threshold: 0.8 # ビームスキップのエラー閾値　スキップされたビームの割合が異常に高い場合に「パーティクルフィルタが間違った位置に収束した」
     do_beamskip: True # ビームスキップを行うかどうか default: False
 
     lambda_short: 0.1
@@ -146,10 +146,10 @@ controller_server:
       ax_min: -0.50 # default: -3.0 -> -0.50
       ay_max: 0.00
       az_max: 3.00 # default: 3.5 -> 0.35 -> 1.50 -> 3.00
-      iteration_count: 4
+      iteration_count: 3
       prune_distance: 1.0
       transform_tolerance: 5.0 # default: 0.1 -> 0.2
-      temperature: 0.5 # default: 0.3 経路選択のランダム性を決定するパラメータ
+      temperature: 0.4 # default: 0.3 経路選択のランダム性を決定するパラメータ
       gamma: 0.015
       motion_model: "DiffDrive"
       visualize: False # default: False -> trueにするとパフォーマンスが落ちる
@@ -203,7 +203,7 @@ controller_server:
       PathAlignCritic:
         enabled: True
         cost_power: 1
-        cost_weight: 14.0
+        cost_weight: 12.0 # default: 14.0 -> 12.0 ロボットがパスから逸脱することを抑制
         max_path_occupancy_ratio: 0.05
         trajectory_point_step: 4
         threshold_to_consider: 0.5
@@ -270,15 +270,15 @@ local_costmap:
 global_costmap:
   global_costmap:
     ros__parameters:
-      update_frequency: 30.0
-      publish_frequency: 30.0
+      update_frequency: 20.0
+      publish_frequency: 20.0
       global_frame: map
       robot_base_frame: base_footprint # default: base_link
       use_sim_time: False
       resolution: 0.05
       track_unknown_space: True
       footprint: "[ [0.80, 0.45], [0.80, -0.45], [-0.75, -0.40], [-0.75, 0.40] ]" # ロボットの形状
-      plugins: ["static_layer", "stvl_layer", "inflation_layer", "obstacle_layer"]
+      plugins: ["static_layer", "obstacle_layer", "stvl_layer", "inflation_layer"]
       stvl_layer:
         plugin: "spatio_temporal_voxel_layer/SpatioTemporalVoxelLayer" # 時空間ボクセルレイヤープラグイン
         enabled: true # レイヤーを有効化
@@ -441,7 +441,7 @@ behavior_server:
 robot_state_publisher:
   ros__parameters:
     use_sim_time: False
-    publish_frequency: 50.0
+    publish_frequency: 30.0
 
 waypoint_follower:
   ros__parameters:
