@@ -30,7 +30,7 @@ amcl:
     laser_likelihood_max_dist: 100.0 # レーザの尤度の最大距離[m] default: 2.0
     laser_max_range: 100.0
     laser_min_range: -1.0
-    laser_model_type: "likelihood_field_prob" # レーザモデルのタイプ default: "likelihood_field"
+    laser_model_type: "likelihood_field_prob" # prob
 
     # パーティクルフィルタのパラメータ
     max_beams: 180 # ビームの数 default: 60 -> 120 -> 180 高密度
