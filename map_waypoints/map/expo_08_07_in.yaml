@@ -1,0 +1,7 @@
+free_thresh: 0.25
+image: expo_08_07_in.pgm
+mode: trinary
+negate: 0
+occupied_thresh: 0.65
+origin: [-1.75, -10.0, 0]
+resolution: 0.05

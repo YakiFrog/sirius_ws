@@ -1,22 +1,7 @@
-format_version: '1.0'
-waypoints:
-- number: 1
-  x: 0.9
-  y: -1.75
-  angle_radians: -1.088
-- number: 2
-  x: 1.95
-  y: -0.75
-  angle_radians: 1.079
-- number: 3
-  x: 1.95
-  y: 1.2
-  angle_radians: 2.458
-- number: 4
-  x: 0.45
-  y: 2.25
-  angle_radians: -2.082
-- number: 5
-  x: 0.0
-  y: 0.0
-  angle_radians: -1.425
+free_thresh: 0.25
+image: expo_08_03_in.pgm
+mode: trinary
+negate: 0
+occupied_thresh: 0.65
+origin: [0, 0, 0]
+resolution: 0.05
