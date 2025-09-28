@@ -20,6 +20,7 @@ class GetPose(Node):
         self.listener = TransformListener(self.tfBuffer, self)
         self.position = []
         self.positions_list = []
+        self.waypoint_number = 1
         self.timer = self.create_timer(1.0, self.get_position)
 
     def get_position(self):
@@ -29,14 +30,25 @@ class GetPose(Node):
             translation = transform.transform.translation
             rotation = transform.transform.rotation
 
-            self.position = [translation.x, translation.y, translation.z, rotation.x, rotation.y, rotation.z, rotation.w]
+            # クォータニオンからヨー角を計算
+            yaw = math.atan2(2.0 * (rotation.w * rotation.z + rotation.x * rotation.y),
+                           1.0 - 2.0 * (rotation.y * rotation.y + rotation.z * rotation.z))
 
-            self.positions_list.append(self.position)
+            waypoint = {
+                'number': self.waypoint_number,
+                'x': float(translation.x),
+                'y': float(translation.y),
+                'angle_radians': float(yaw)
+            }
+            self.positions_list.append(waypoint)
 
-            data = {'points':self.positions_list}
+            data = {
+                'format_version': '1.0',
+                'waypoints': self.positions_list
+            }
 
             with open(file_path, 'w', encoding='utf-8') as f:
-                yaml.dump(data, f)
+                yaml.dump(data, f, default_flow_style=False)
 
             self.get_logger().info('Success!')
 

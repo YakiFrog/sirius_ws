@@ -460,10 +460,10 @@ velocity_smoother:
     smoothing_frequency: 20.0 # default: 20.0 controller_frequencyと同じ値にしたほうがいい
     scale_velocities: True # default: False Trueにして一回ガタついたので，Falseにしている
     feedback: "OPEN_LOOP" # デフォルトは"OPEN_LOOP" CLOSED_LOOPにすると動かない
-    max_velocity: [0.50, 0.0, 1.00]
-    min_velocity: [-0.50, 0.0, -1.00]
-    max_accel: [0.70, 0.0, 1.50] # default: [0.30, 0.0, 0.35]
-    max_decel: [-0.70, 0.0, -1.50] # default: [-0.30, 0.0, -0.35]
+    max_velocity: [1.00, 0.0, 1.00]
+    min_velocity: [-1.00, 0.0, -1.00]
+    max_accel: [0.90, 0.0, 1.50] # default: [0.30, 0.0, 0.35]
+    max_decel: [-0.90, 0.0, -1.50] # default: [-0.30, 0.0, -0.35]
     odom_topic: "odom"
     odom_duration: 0.1
     deadband_velocity: [0.00, 0.0, 0.00]

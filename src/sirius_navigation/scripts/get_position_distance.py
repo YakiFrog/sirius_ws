@@ -21,6 +21,7 @@ class GetPose(Node):
         self.positions_list = []
         self.check_position = [0,0]
         self.position = []
+        self.waypoint_number = 1
 
     def timer_callback(self):
         distance = 0
@@ -43,7 +44,18 @@ class GetPose(Node):
             self.get_logger().warn('Extrapolation error')
 
         if distance > 3.0:
-            self.positions_list.append(self.position)
+            # クォータニオンからヨー角を計算
+            yaw = math.atan2(2.0 * (rotation.w * rotation.z + rotation.x * rotation.y),
+                           1.0 - 2.0 * (rotation.y * rotation.y + rotation.z * rotation.z))
+            
+            waypoint = {
+                'number': self.waypoint_number,
+                'x': float(translation.x),
+                'y': float(translation.y),
+                'angle_radians': float(yaw)
+            }
+            self.positions_list.append(waypoint)
+            self.waypoint_number += 1
 
             #取得した座標の更新
             self.check_position[0] = translation.x
@@ -52,12 +64,26 @@ class GetPose(Node):
             self.get_logger().info('Success!')
 
     def finish_write(self):
-        self.positions_list.append(self.position)
-        data = {"points":self.positions_list}
+        # 最後の位置も追加
+        if self.position:
+            yaw = math.atan2(2.0 * (self.position[6] * self.position[5] + self.position[3] * self.position[4]),
+                           1.0 - 2.0 * (self.position[4] * self.position[4] + self.position[5] * self.position[5]))
+            waypoint = {
+                'number': self.waypoint_number,
+                'x': float(self.position[0]),
+                'y': float(self.position[1]),
+                'angle_radians': float(yaw)
+            }
+            self.positions_list.append(waypoint)
+        
+        data = {
+            "format_version": "1.0",
+            "waypoints": self.positions_list
+        }
 
         # YAMLファイルに書き込む
         with open(file_path, 'w', encoding='utf-8') as f:
-            yaml.dump(data, f)
+            yaml.dump(data, f, default_flow_style=False)
 
         self.get_logger().info('Finish')
 
