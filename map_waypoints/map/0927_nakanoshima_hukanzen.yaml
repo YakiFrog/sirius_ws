@@ -1,7 +1,0 @@
-free_thresh: 0.25
-image: 0927_nakanoshima_hukanzen.pgm
-mode: trinary
-negate: 0
-occupied_thresh: 0.65
-origin: [-58.400000000000006, -138.0, 0]
-resolution: 0.05
