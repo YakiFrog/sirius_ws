@@ -1,135 +1,117 @@
 amcl:
   ros__parameters:
-    use_sim_time: False
+    use_sim_time: true
+    
+    # オドメトリモデルのノイズパラメータ（回転・並進の誤差モデル）
+    # 進行方向に集中させるため、横方向の拡散を抑制
+    # alpha1: 0.05  # 回転による回転誤差（小さく=回転時の角度ブレを抑制）
+    # alpha2: 0.05  # 並進による回転誤差（小さく=直進時の角度ブレを抑制）
+    # alpha3: 0.15  # 並進による並進誤差（進行方向のブレ）← 若干大きめで前方に広げる
+    # alpha4: 0.05  # 回転による並進誤差（小さく=回転時の横ズレを抑制）
+    # alpha5: 0.10  # 並進誤差の追加ノイズ（小さく=全方向の無駄な拡散を抑制）
 
-    # ロボットの動作モデルのパラメータ
-    alpha1: 0.08 # ロールのノイズの標準偏差（回転によるノイズを減らす）
-    alpha2: 0.08 # ピッチのノイズの標準偏差（並進によるノイズを減らす）
-    alpha3: 0.20 # ヨーのノイズの標準偏差（並進による回転ノイズを少し増やす）
-    alpha4: 0.08 # 進行方向のノイズの標準偏差（回転による並進ノイズを減らす）
-    alpha5: 0.2 # 進行方向のノイズの標準偏差（オムニ用)
-    base_frame_id: "base_footprint"
-    global_frame_id: "map"
 
-    # 初期姿勢設定（前方向への偏りを作る）
-    set_initial_pose: true # 初期姿勢設定を有効化
-    always_reset_initial_pose: false # 初期姿勢を常にリセットするかどうか
-    initial_pose:
-      x: 0.0
-      y: 0.0
-      z: 0.0
-      yaw: 0.0
-
-    # ビームスキップのパラメータ
-    beam_skip_distance: 0.5 # ビームスキップの距離[m] レーザービームの測定点が障害物にどれだけ近い場合に「マップと一致している」と判定するかの距離閾値
-    beam_skip_error_threshold: 0.9 # ビームスキップのエラー閾値　スキップされたビームの割合が異常に高い場合に「パーティクルフィルタが間違った位置に収束した」
-    beam_skip_threshold: 0.3 # ビームスキップの閾値　各ビームについて「マップと一致したパーティクルの割合」がどの程度以上の場合にそのビームを位置推定の計算に使用するかを決定
-    do_beamskip: True # ビームスキップを行うかどうか default: False
-
-    lambda_short: 0.1
-    laser_likelihood_max_dist: 100.0 # レーザの尤度の最大距離[m] default: 2.0
-    laser_max_range: 100.0
-    laser_min_range: -1.0
-    laser_model_type: "likelihood_field" # prob
-
-    # パーティクルフィルタのパラメータ
-    max_beams: 120 # ビームの数 default: 60 -> 120 -> 180 高密度
-    max_particles: 3000 # パーティクルの数 default: 2000 -> 3000
-    min_particles: 600 # パーティクルの最小数 default: 500 -> 400 -> 900 -> 600(1007)
-    pf_err: 0.10
-    pf_z: 0.99
-
-    odom_frame_id: "odom"
-    recovery_alpha_fast: 0.01 # リカバリのα値 0.4 -> 0.2 0.4がでかすぎた -> 0.1
-    recovery_alpha_slow: 0.02 # リカバリのα値 いれるなら，0.1以上じゃないと動かない -> 0.1
-    resample_interval: 1 # リサンプリングの間隔 default: 1
-    robot_model_type: "nav2_amcl::DifferentialMotionModel"
-    save_pose_rate: 0.5
-
-    sigma_hit: 0.1 # ヒットの標準偏差 default: 0.2 -> 0.1 (0615)
-    tf_broadcast: True
-    transform_tolerance: 2.0 # 1.0
-    update_min_a: 0.05 # パーティクルフィルタの更新の閾値 default: 0.2
-    update_min_d: 0.05 # パーティクルフィルタの更新の閾値 default: 0.25
-    z_hit: 0.70 # ヒットの確率 default: 0.5
-    z_short: 0.15
-    z_max: 0.05
-    z_rand: 0.10 # ランダムな確率 default: 0.5
-    scan_topic: scan3 # スキャンデータのトピック名
+    # 自己位置ぶっとびやすいのは、ここの値。シミュレータ上のオドメトリはずれやすい
+    # 点群と環境情報が一致していないときは、ここの値を高くする（LiDARの信頼度を上げる）ことで、ビッタリ合うはず。
+    alpha1: 0.35  # 回転による回転誤差（小さく=回転時の角度ブレを抑制）
+    alpha2: 0.35  # 並進による回転誤差（小さく=直進時の角度ブレを抑制）
+    alpha3: 0.35  # 並進による並進誤差（進行方向のブレ）← 若干大きめで前方に広げる
+    alpha4: 0.35  # 回転による並進誤差（小さく=回転時の横ズレを抑制）
+    alpha5: 0.10  # 並進誤差の追加ノイズ（小さく=全方向の無駄な拡散を抑制）
+    
+    # フレームID設定
+    base_frame_id: "sirius3/base_footprint"  # ロボットのベースフレーム
+    global_frame_id: "map"                    # グローバル座標系（マップフレーム）
+    odom_frame_id: "sirius3/odom"             # オドメトリフレーム
+    
+    # レーザースキャン処理の最適化パラメータ
+    beam_skip_distance: 0.5           # ビームをスキップする距離閾値[m]（処理軽減）
+    beam_skip_error_threshold: 0.9    # スキップ判定のエラー閾値
+    beam_skip_threshold: 0.3          # ビームスキップの確率閾値
+    do_beamskip: true                 # ビームスキップ機能の有効化（計算負荷削減）-> かなり効く。これは触らない。
+    
+    # センサーモデルパラメータ
+    lambda_short: 0.1                      # 短距離測定の指数分布パラメータ
+    laser_likelihood_max_dist: 100.0        # 尤度計算の最大距離[m] 下げていいことはなかった。
+    laser_max_range: 100.0                 # レーザーの最大測定距離[m]
+    laser_min_range: -1.0                  # レーザーの最小測定距離[m]（-1は自動設定）
+    laser_model_type: "likelihood_field"   # センサーモデルタイプ
+    # likelihood_field_prob: 確率的尤度場モデル（推奨・高速・ノイズに強い）
+    #   - 事前計算された距離場を使用して高速に尤度を計算
+    #   - 動的障害物や一時的なノイズに対してロバスト
+    #   - 室内環境や構造化された環境で最適
+    #   - 自己位置がジャンプしやすいが、補正が効く
+    # likelihood_field: 基本的な尤度場モデル（高速だが正規化なし）
+    # beam: ビームモデル（高精度だが計算コスト大・ノイズに弱い）
+    #   - レイトレーシングで障害物を検出
+    #   - 屋外や複雑な環境向き
+    max_beams: 120                         # 使用する最大ビーム数（多いほど精度高・負荷大）
+    scan_topic: scan                       # 購読するレーザースキャントピック名
+    
+    # パーティクルフィルタ設定
+    max_particles: 2000  # 最大パーティクル数（多いほど精度高・計算量大）3000 -> 2000
+    min_particles: 500  # 最小パーティクル数（少ないと精度低・計算量小）700 -> 500
+    pf_err: 0.10         # 位置推定の許容誤差（小さいほど高精度だが計算量増）
+    pf_z: 0.99           # パーティクルフィルタの信頼度（0.99推奨）
+    
+    # リカバリー機能（ロボットロスト時の回復）
+    # 自己位置がジャンプするのはこの子の値のせい。大きくしすぎず、修正が効くような値にする。
+    recovery_alpha_fast: 0.01  # 高速リカバリーの学習率（大きいと素早く回復）-> Likelihood_field_probは確率的に自己位置を計算するため、ジャンプしがち。その際にある程度早くリカバリーしないとだめなのなので0.001では遅い。
+    recovery_alpha_slow: 0.02    # 低速リカバリーの学習率（安定性重視）
+    
+    # フィルタ更新設定
+    resample_interval: 1          # リサンプリング間隔（毎フレーム）
+    save_pose_rate: 0.5           # 位置保存レート[Hz]
+    
+    # ロボットモデル
+    robot_model_type: "nav2_amcl::DifferentialMotionModel"  # 差動駆動モデル
+    
+    # センサー尤度モデルの重み（合計1.0になるように調整）
+    sigma_hit: 0.1   # 測定ノイズの標準偏差[m]（小さい=高精度センサー）
+    z_hit: 0.70      # 正確な測定の重み（大きい=センサーを信頼） -> マップ依存度
+    z_short: 0.15    # 短距離測定の重み（予期しない近い障害物）
+    z_max: 0.05      # 最大距離測定の重み
+    z_rand: 0.10      # ランダムノイズの重み（環境の予期しない障害物）
+    
+    # TF配信設定
+    tf_broadcast: true           # map→odom変換の配信有効化
+    transform_tolerance: 2.0     # TF変換の許容遅延[s]（大きいと安定・遅延許容）
+    
+    # 位置更新の閾値（頻繁な更新を防ぐ）
+    update_min_a: 0.05  # 更新に必要な最小角度変化[rad]（約8.6度）
+    update_min_d: 0.05  # 更新に必要な最小移動距離[m]
 
 bt_navigator:
   ros__parameters:
-    use_sim_time: False
+    use_sim_time: true
     global_frame: map
-    robot_base_frame: base_footprint # default: base_link
+    robot_base_frame: sirius3/base_link
     odom_topic: /odom
     bt_loop_duration: 10
     default_server_timeout: 20
-    # wait_for_service_timeout: 1000
+    wait_for_service_timeout: 1000
+    action_server_result_timeout: 900.0
+    navigators: ["navigate_to_pose", "navigate_through_poses"]
+    navigate_to_pose:
+      plugin: "nav2_bt_navigator::NavigateToPoseNavigator"
+    navigate_through_poses:
+      plugin: "nav2_bt_navigator::NavigateThroughPosesNavigator"
     # 'default_nav_through_poses_bt_xml' and 'default_nav_to_pose_bt_xml' are use defaults:
     # nav2_bt_navigator/navigate_to_pose_w_replanning_and_recovery.xml
     # nav2_bt_navigator/navigate_through_poses_w_replanning_and_recovery.xml
     # They can be set here or via a RewrittenYaml remap from a parent launch file to Nav2.
-    plugin_lib_names:
-      - nav2_compute_path_to_pose_action_bt_node
-      - nav2_compute_path_through_poses_action_bt_node
-      - nav2_smooth_path_action_bt_node
-      - nav2_follow_path_action_bt_node
-      - nav2_spin_action_bt_node
-      - nav2_wait_action_bt_node
-      - nav2_assisted_teleop_action_bt_node
-      - nav2_back_up_action_bt_node
-      - nav2_drive_on_heading_bt_node
-      - nav2_clear_costmap_service_bt_node
-      - nav2_is_stuck_condition_bt_node
-      - nav2_goal_reached_condition_bt_node
-      - nav2_goal_updated_condition_bt_node
-      - nav2_globally_updated_goal_condition_bt_node
-      - nav2_is_path_valid_condition_bt_node
-      - nav2_initial_pose_received_condition_bt_node
-      - nav2_reinitialize_global_localization_service_bt_node
-      - nav2_rate_controller_bt_node
-      - nav2_distance_controller_bt_node
-      - nav2_speed_controller_bt_node
-      - nav2_truncate_path_action_bt_node
-      - nav2_truncate_path_local_action_bt_node
-      - nav2_goal_updater_node_bt_node
-      - nav2_recovery_node_bt_node
-      - nav2_pipeline_sequence_bt_node
-      - nav2_round_robin_node_bt_node
-      - nav2_transform_available_condition_bt_node
-      - nav2_time_expired_condition_bt_node
-      - nav2_path_expiring_timer_condition
-      - nav2_distance_traveled_condition_bt_node
-      - nav2_single_trigger_bt_node
-      - nav2_goal_updated_controller_bt_node
-      - nav2_is_battery_low_condition_bt_node
-      - nav2_navigate_through_poses_action_bt_node
-      - nav2_navigate_to_pose_action_bt_node
-      - nav2_remove_passed_goals_action_bt_node
-      - nav2_planner_selector_bt_node
-      - nav2_controller_selector_bt_node
-      - nav2_goal_checker_selector_bt_node
-      - nav2_controller_cancel_bt_node
-      - nav2_path_longer_on_approach_bt_node
-      - nav2_wait_cancel_bt_node
-      - nav2_spin_cancel_bt_node
-      - nav2_back_up_cancel_bt_node
-      - nav2_assisted_teleop_cancel_bt_node
-      - nav2_drive_on_heading_cancel_bt_node
-      - nav2_is_battery_charging_condition_bt_node
 
-bt_navigator_navigate_through_poses_rclcpp_node:
-  ros__parameters:
-    use_sim_time: False
+    # plugin_lib_names is used to add custom BT plugins to the executor (vector of strings).
+    # Built-in plugins are added automatically
+    # plugin_lib_names: []
 
-bt_navigator_navigate_to_pose_rclcpp_node:
-  ros__parameters:
-    use_sim_time: False
+    error_code_names:
+      - compute_path_error_code
+      - follow_path_error_code
 
 controller_server:
   ros__parameters:
-    use_sim_time: False
+    use_sim_time: true
     controller_frequency: 15.0 # 20.0 -> 15.0 制御ループの周波数（高いほど応答性良・負荷大）
     costmap_update_timeout: 0.30
     min_x_velocity_threshold: 0.01
@@ -284,11 +266,11 @@ controller_server:
 local_costmap:
   local_costmap:
     ros__parameters:
-      use_sim_time: False
+      use_sim_time: true
       update_frequency: 3.0 # 軽量化 5.0 -> 3.0
       publish_frequency: 2.0
-      global_frame: odom # ✅ 短距離・リアルタイム制御用, MapだとAMCLのジャンプで軌道が乱れる
-      robot_base_frame: base_footprint # default: base_link
+      global_frame: sirius3/odom # ✅ 短距離・リアルタイム制御用, MapだとAMCLのジャンプで軌道が乱れる
+      robot_base_frame: sirius3/base_link
       rolling_window: true
       width: 5
       height: 5
@@ -309,11 +291,11 @@ local_costmap:
 global_costmap:
   global_costmap:
     ros__parameters:
-      use_sim_time: False
+      use_sim_time: true
       update_frequency: 1.0 # 1.0 変えないほうがいい
       publish_frequency: 1.0
       global_frame: map # ✅ 長距離・経路計画用
-      robot_base_frame: base_footprint # default: base_link
+      robot_base_frame: sirius3/base_link
       footprint: "[ [0.40, 0.35], [0.40, -0.35], [-0.60, -0.35], [-0.60, 0.35] ]" # ロボットの形状 (10cmマージン, 横は5cmマージン)
       resolution: 0.05 # 0.05 -> 0.10 (軽量化のため)
       track_unknown_space: true
@@ -391,17 +373,17 @@ global_costmap:
         inflation_radius: 0.75 # こうしないと、青色に車体が入って動かなくなる
       always_send_full_costmap: True
 
-map_server:
-  ros__parameters:
-    use_sim_time: False
-    # Overridden in launch by the "map" launch configuration or provided default value.
-    # To use in yaml, remove the default "map" value in the tb3_simulation_launch.py file & provide full path to map below.
-    yaml_filename: ""
+# The yaml_filename does not need to be specified since it going to be set by defaults in launch.
+# If you'd rather set it in the yaml, remove the default "map" value in the tb3_simulation_launch.py
+# file & provide full path to map below. If CLI map configuration or launch default is provided, that will be used.
+# map_server:
+#   ros__parameters:
+#     yaml_filename: ""
 
 map_saver:
   ros__parameters:
-    use_sim_time: False
-    save_map_timeout: 10000 # タイムアウト時間[s] default: 5.0 (5 -> 10000)
+    use_sim_time: true
+    save_map_timeout: 100.0
     free_thresh_default: 0.25
     occupied_thresh_default: 0.65
     map_subscribe_transient_local: True
@@ -413,14 +395,14 @@ planner_server:
     planner_plugins: ["GridBased"]
     costmap_update_timeout: 1.0
     GridBased:
-      plugin: "nav2_navfn_planner/NavfnPlanner"
+      plugin: "nav2_navfn_planner::NavfnPlanner"
       tolerance: 0.5
       use_astar: true
       allow_unknown: true
 
 smoother_server:
   ros__parameters:
-    use_sim_time: False
+    use_sim_time: true
     smoother_plugins: ["simple_smoother"]
     simple_smoother:
       plugin: "nav2_smoother::SimpleSmoother"
@@ -432,50 +414,47 @@ smoother_server:
 
 behavior_server:
   ros__parameters:
-    costmap_topic: local_costmap/costmap_raw
-    footprint_topic: local_costmap/published_footprint
-    cycle_frequency: 5.0 # (Hz) default: 10
-    behavior_plugins:
-      ["spin", "backup", "drive_on_heading", "assisted_teleop", "wait"]
-      # ["wait"]
+    use_sim_time: true
+    local_costmap_topic: local_costmap/costmap_raw
+    global_costmap_topic: global_costmap/costmap_raw
+    local_footprint_topic: local_costmap/published_footprint
+    global_footprint_topic: global_costmap/published_footprint
+    cycle_frequency: 10.0
+    behavior_plugins: ["spin", "backup", "drive_on_heading", "assisted_teleop", "wait"]
     spin:
-      plugin: "nav2_behaviors/Spin"
+      plugin: "nav2_behaviors::Spin"
     backup:
-      plugin: "nav2_behaviors/BackUp"
+      plugin: "nav2_behaviors::BackUp"
     drive_on_heading:
-      plugin: "nav2_behaviors/DriveOnHeading"
+      plugin: "nav2_behaviors::DriveOnHeading"
     wait:
-      plugin: "nav2_behaviors/Wait"
+      plugin: "nav2_behaviors::Wait"
     assisted_teleop:
-      plugin: "nav2_behaviors/AssistedTeleop"
-    global_frame: odom
-    robot_base_frame: base_footprint # default: base_link
-    transform_tolerance: 0.5
-    use_sim_time: False
-    simulate_ahead_time: 3.0 # どんくらい先まで予測するか[s] default: 2.0
-    max_rotational_vel: 0.40
-    min_rotational_vel: 0.05
-    rotational_acc_lim: 0.15
-
-robot_state_publisher:
-  ros__parameters:
-    use_sim_time: False
-    publish_frequency: 30.0
+      plugin: "nav2_behaviors::AssistedTeleop"
+    local_frame: sirius3/odom
+    global_frame: map
+    robot_base_frame: sirius3/base_link
+    transform_tolerance: 0.1
+    simulate_ahead_time: 2.0
+    max_rotational_vel: 1.0
+    min_rotational_vel: 0.4
+    rotational_acc_lim: 1.5
 
 waypoint_follower:
   ros__parameters:
-    use_sim_time: False # default: True Falseにするとガクつく．たぶん他全部もFalseにしないといけない
-    loop_rate: 30
-    stop_on_failure: True # 失敗時に停止するかどうか(default: False)
+    use_sim_time: true
+    loop_rate: 20
+    stop_on_failure: false
+    action_server_result_timeout: 900.0
     waypoint_task_executor_plugin: "wait_at_waypoint"
     wait_at_waypoint:
       plugin: "nav2_waypoint_follower::WaitAtWaypoint"
       enabled: True
-      waypoint_pause_duration: 100 # ウェイポイント到達後の待機時間[ms] default: 200
+      waypoint_pause_duration: 200
 
 velocity_smoother:
   ros__parameters:
-    use_sim_time: False
+    use_sim_time: true
     smoothing_frequency: 20.0
     scale_velocities: False
     feedback: "OPEN_LOOP"
@@ -491,3 +470,104 @@ velocity_smoother:
     odom_duration: 0.1
     deadband_velocity: [0.0, 0.0, 0.0]
     velocity_timeout: 1.0
+
+collision_monitor:
+  ros__parameters:
+    use_sim_time: true
+    base_frame_id: "sirius3/base_footprint"
+    odom_frame_id: "sirius3/odom"
+    cmd_vel_in_topic: "cmd_vel_smoothed"
+    cmd_vel_out_topic: "cmd_vel"
+    state_topic: "collision_monitor_state"
+    transform_tolerance: 0.2
+    source_timeout: 1.0
+    base_shift_correction: True
+    stop_pub_timeout: 2.0
+    # Polygons represent zone around the robot for "stop", "slowdown" and "limit" action types,
+    # and robot footprint for "approach" action type.
+    polygons: ["FootprintApproach"]
+    FootprintApproach:
+      type: "polygon"
+      action_type: "approach"
+      footprint_topic: "/local_costmap/published_footprint"
+      time_before_collision: 1.2
+      simulation_time_step: 0.1
+      min_points: 6
+      visualize: False
+      enabled: True
+    observation_sources: ["scan"]
+    scan:
+      type: "scan"
+      topic: "scan"
+      min_height: 0.15
+      max_height: 2.0
+      enabled: True
+
+docking_server:
+  ros__parameters:
+    use_sim_time: true
+    controller_frequency: 50.0
+    initial_perception_timeout: 5.0
+    wait_charge_timeout: 5.0
+    dock_approach_timeout: 30.0
+    undock_linear_tolerance: 0.05
+    undock_angular_tolerance: 0.1
+    max_retries: 3
+    base_frame: "sirius3/base_link"
+    fixed_frame: "sirius3/odom"
+    dock_backwards: false
+    dock_prestaging_tolerance: 0.5
+
+    # Types of docks
+    dock_plugins: ['simple_charging_dock']
+    simple_charging_dock:
+      plugin: 'opennav_docking::SimpleChargingDock'
+      docking_threshold: 0.05
+      staging_x_offset: -0.7
+      use_external_detection_pose: true
+      use_battery_status: false # true
+      use_stall_detection: false # true
+
+      external_detection_timeout: 1.0
+      external_detection_translation_x: -0.18
+      external_detection_translation_y: 0.0
+      external_detection_rotation_roll: -1.57
+      external_detection_rotation_pitch: -1.57
+      external_detection_rotation_yaw: 0.0
+      filter_coef: 0.1
+
+    # Dock instances
+    # The following example illustrates configuring dock instances.
+    # docks: ['home_dock']  # Input your docks here
+    # home_dock:
+    #   type: 'simple_charging_dock'
+    #   frame: map
+    #   pose: [0.0, 0.0, 0.0]
+
+    controller:
+      k_phi: 3.0
+      k_delta: 2.0
+      v_linear_min: 0.15
+      v_linear_max: 0.15
+      use_collision_detection: true
+      costmap_topic: "local_costmap/costmap_raw"
+      footprint_topic: "local_costmap/published_footprint"
+      transform_tolerance: 0.1
+      projection_time: 5.0
+      simulation_step: 0.1
+      dock_collision_threshold: 0.3
+
+loopback_simulator:
+  ros__parameters:
+    use_sim_time: true
+    base_frame_id: "sirius3/base_footprint"
+    odom_frame_id: "sirius3/odom"
+    map_frame_id: "map"
+    scan_frame_id: "sirius3/base_link/lidar_link"  # tb4_loopback_simulator.launch.py remaps to 'rplidar_link'
+    update_duration: 0.02
+    scan_range_min: 0.05
+    scan_range_max: 30.0
+    scan_angle_min: -3.1415
+    scan_angle_max: 3.1415
+    scan_angle_increment: 0.02617
+    scan_use_inf: true
