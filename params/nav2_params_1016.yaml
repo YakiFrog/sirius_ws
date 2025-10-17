@@ -135,17 +135,21 @@ controller_server:
       time_steps: 60
       model_dt: 0.050 # default: 0.05
       batch_size: 2500
+      
       vx_std: 0.15 # default: 0.2 -> 0.1
       vy_std: 0.0
       wz_std: 1.00 # default: 0.4 -> 0.5 -> 0.6
+
       vx_max: 0.50 # default: 0.50 -> 0.40
       vx_min: -0.30 # default: -0.35 -> -0.40
       vy_max: 0.00
       wz_max: 2.50 # default: 1.9 -> 0.4 -> 1.0 -> 2.5
+
       ax_max: 0.70 # default: 3.0 -> 0.50
       ax_min: -0.80 # default: -3.0 -> -0.50
       ay_max: 0.00
       az_max: 3.00 # default: 3.5 -> 0.35 -> 1.50 -> 3.00
+
       iteration_count: 3
       prune_distance: 1.0
       transform_tolerance: 5.0 # default: 0.1 -> 0.2
