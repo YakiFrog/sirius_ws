@@ -4,8 +4,8 @@ amcl:
     use_sim_time: False
 
     # ロボットの動作モデルのパラメータ
-    alpha1: 0.05 # ロールのノイズの標準偏差（回転によるノイズを減らす）
-    alpha2: 0.05 # ピッチのノイズの標準偏差（並進によるノイズを減らす）
+    alpha1: 0.08 # ロールのノイズの標準偏差（回転によるノイズを減らす）
+    alpha2: 0.08 # ピッチのノイズの標準偏差（並進によるノイズを減らす）
     alpha3: 0.10 # ヨーのノイズの標準偏差（並進による回転ノイズを少し増やす）
     alpha4: 0.10 # 進行方向のノイズの標準偏差（回転による並進ノイズを減らす）
     alpha5: 0.00 # 進行方向のノイズの標準偏差（オムニ用)
@@ -28,13 +28,13 @@ amcl:
     do_beamskip: True # ビームスキップを行うかどうか default: False
 
     lambda_short: 0.1
-    laser_likelihood_max_dist: 50.0 # レーザの尤度の最大距離[m] default: 2.0
+    laser_likelihood_max_dist: 100.0 # レーザの尤度の最大距離[m] default: 2.0
     laser_max_range: 100.0
     laser_min_range: -1.0
     laser_model_type: "likelihood_field" # prob
 
     # パーティクルフィルタのパラメータ
-    max_beams: 120 # ビームの数 default: 60 -> 120 -> 180 高密度
+    max_beams: 180 # ビームの数 default: 60 -> 120 -> 180 高密度
     max_particles: 3000 # パーティクルの数 default: 2000 -> 3000
     min_particles: 900 # パーティクルの最小数 default: 500 -> 400 -> 900 -> 600(1007)
     pf_err: 0.10
@@ -49,7 +49,7 @@ amcl:
 
     sigma_hit: 0.1 # ヒットの標準偏差 default: 0.2 -> 0.1 (0615)
     tf_broadcast: True
-    transform_tolerance: 1.0 # 1.0
+    transform_tolerance: 0.5 # 1.0
     update_min_a: 0.05 # パーティクルフィルタの更新の閾値 default: 0.2
     update_min_d: 0.05 # パーティクルフィルタの更新の閾値 default: 0.25
     z_hit: 0.70 # ヒットの確率 default: 0.5
@@ -213,7 +213,7 @@ local_costmap:
 controller_server:
   ros__parameters:
     use_sim_time: False
-    controller_frequency: 15.0 # 20.0 -> 15.0 制御ループの周波数（高いほど応答性良・負荷大）
+    controller_frequency: 10.0 # 20.0 -> 15.0 制御ループの周波数（高いほど応答性良・負荷大）
     costmap_update_timeout: 0.30
     min_x_velocity_threshold: 0.1
     min_y_velocity_threshold: 0.5  # 差動駆動なので意味はない
@@ -243,8 +243,8 @@ controller_server:
       yaw_goal_tolerance: 0.25
     FollowPath:
       plugin: "nav2_mppi_controller::MPPIController"
-      time_steps: 90  # 80 -> 60
-      model_dt: 0.0667 # 0.05→0.07,  1/20 = 0.05, 1/15 = 0.06666...  制御周期に合わせる
+      time_steps: 60  # 80 -> 60
+      model_dt: 0.1 # 0.05→0.07,  1/20 = 0.05, 1/15 = 0.06666...  制御周期に合わせる 1/10 = 0.1
       batch_size: 2000  # 2000→1500 計算負荷を半減（制御ループ遅延対策）
 
       ax_max: 1.2
