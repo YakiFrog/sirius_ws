@@ -85,6 +85,8 @@ global_costmap:
           raytrace_min_range: 0.0
           obstacle_max_range: 18.0
           obstacle_min_range: 0.0
+          expected_update_rate: 1.0
+          observation_persistence: 0.0
       static_layer:
         plugin: "nav2_costmap_2d::StaticLayer"
         map_subscribe_transient_local: True
@@ -167,8 +169,8 @@ local_costmap:
           obstacle_range: 20.0 # 障害物検知範囲（メートル）
           min_obstacle_height: 0.3 # 最小障害物高さ（メートル）、デフォルトは0
           max_obstacle_height: 2.0 # 最大障害物高さ（メートル）、デフォルトは3
-          expected_update_rate: 0.0 # 期待更新レート、この速度で更新されない場合はバッファから削除
-          observation_persistence: 0.0 # 観測持続時間、値が0の場合は最新の測定値のみ使用
+          expected_update_rate: 0.1 # 期待更新レート、この速度で更新されない場合はバッファから削除
+          observation_persistence: 0.5 # 観測持続時間、値が0の場合は最新の測定値のみ使用
           inf_is_valid: false # 無限値が有効かどうか（レーザースキャン用）
           filter: "voxel" # フィルタータイプ（"voxel"、"passthrough"、またはフィルタなし）
           clear_after_reading: true # 読み取り後にバッファをクリアするかどうか
@@ -185,7 +187,7 @@ local_costmap:
           vertical_fov_angle: 0.523 # 垂直視野角（ラジアン）、デフォルトは0.7
           vertical_fov_padding: 0.05 # 3DライダーのパディングF（メートル）
           horizontal_fov_angle: 6.29 # 水平視野角（ラジアン）、VLP16などは360度（約6.29ラジアン）
-          decay_acceleration: 5.0 # 減衰加速度（1/s^2）、デフォルトは0
+          decay_acceleration: 10.0 # 減衰加速度（1/s^2）、デフォルトは0
           model_type: 1 # フラスタムのモデルタイプ（0=深度カメラ、1=VLP16などの3Dライダー）
       obstacle_layer:
         plugin: "nav2_costmap_2d::ObstacleLayer"
@@ -245,20 +247,20 @@ controller_server:
       model_dt: 0.07 # 0.05→0.07,  1/20 = 0.05, 1/15 = 0.06666...  制御周期に合わせる
       batch_size: 1000  # 2000→1500 計算負荷を半減（制御ループ遅延対策）
 
-      ax_max: 2.5
-      ax_min: -2.5 # 急ブレーキのために(無根拠)
-      ay_max: 0.0
-      ay_min: -2.0
-      az_max: 3.0
+      ax_max: 0.90
+      ax_min: -0.90 # 急ブレーキのために(無根拠)
+      ay_max: 0.00
+      ay_min: 0.00
+      az_max: 1.80
 
       vx_std: 0.35
       vy_std: 0.00
       wz_std: 0.60
 
-      vx_max: 1.3
-      vx_min: -0.8 # 後退は控えめに
-      vy_max: 0.0
-      wz_max: 2.3
+      vx_max: 1.00
+      vx_min: -0.80 # 後退は控えめに
+      vy_max: 0.00
+      wz_max: 1.50
 
       iteration_count: 1
       prune_distance: 2.0 # より遠くまで軌道を維持
@@ -310,7 +312,7 @@ controller_server:
       PreferForwardCritic:
         enabled: true
         cost_power: 1
-        cost_weight: 1.5           # 前進を強く優先
+        cost_weight: 10.0           # 前進を強く優先
         threshold_to_consider: 2.5 # この距離[m]以内で前進優先評価
       
       # CostCritic: コストマップ（障害物）評価
@@ -318,12 +320,12 @@ controller_server:
       CostCritic:
         enabled: true
         cost_power: 1
-        cost_weight: 10.0              # 障害物回避の重み(高いほど、パスからそれて避ける) 3.81 -> 3.0
+        cost_weight: 15.0              # 障害物回避の重み(高いほど、パスからそれて避ける) 3.81 -> 3.0
         near_collision_cost: 150       # 衝突手前のコスト閾値 253 -> 200
         critical_cost: 250.0           # 危険レベルのコスト閾値　300 -> 250 危険判定を厳しく
         consider_footprint: true      # フットプリント全体で評価するか（false=中心点のみ） これでフットプリントが干渉しているとき動かない
         collision_cost: 1000000.0      # 衝突時の高ペナルティ（実質的に選択されない）
-        near_goal_distance: 1.0        # ゴール付近[m]での評価調整
+        near_goal_distance: 2.0        # ゴール付近[m]での評価調整
         trajectory_point_step: 1       # 軌道上の評価点間隔（大きいほど高速・粗い） 2 -> 1 
       
       # PathAlignCritic: 経路整合性評価
@@ -331,7 +333,7 @@ controller_server:
       PathAlignCritic:
         enabled: true
         cost_power: 1
-        cost_weight: 5.0              # パス追従を強く重視（最も高い重み） 14.0 -> 20.0
+        cost_weight: 10.0              # パス追従を強く重視（最も高い重み） 14.0 -> 20.0
         max_path_occupancy_ratio: 0.20 # パス上の障害物許容率（5% -> 15%に緩和）
         trajectory_point_step: 4       # 評価点間隔 4 -> 3
         threshold_to_consider: 1.0     # この距離[m]以内でパス整合評価 0.5 -> 1.0
@@ -343,7 +345,7 @@ controller_server:
       PathFollowCritic:
         enabled: true
         cost_power: 1
-        cost_weight: 2.0               # 経路追従の重視度 5.0 -> 10.0
+        cost_weight: 10.0               # 経路追従の重視度 5.0 -> 10.0
         offset_from_furthest: 8        # 先読み距離[points]（パス上の何点先を見るか） 5 -> 8
         threshold_to_consider: 2.0     # この距離[m]以内で追従評価 1.4 -> 2.0
       
@@ -375,10 +377,10 @@ velocity_smoother:
     # min_velocity: [-1.0, 0.0, -2.0]
     # max_accel: [2.5, 0.0, 3.2]
     # max_decel: [-2.5, 0.0, -3.2]
-    max_velocity: [1.30, 0.0, 2.30]
-    min_velocity: [-0.50, 0.0, -2.30]
-    max_accel: [2.0, 0.0, 2.00]
-    max_decel: [-2.0, 0.0, -2.00]
+    max_velocity: [1.00, 0.0, 1.50]
+    min_velocity: [-1.00, 0.0, -1.50]
+    max_accel: [0.90, 0.0, 1.80]
+    max_decel: [-0.90, 0.0, -1.80]
     odom_topic: "odom"
     odom_duration: 0.1
     deadband_velocity: [0.0, 0.0, 0.0]
