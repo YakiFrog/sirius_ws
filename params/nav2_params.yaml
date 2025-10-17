@@ -1,3 +1,4 @@
+# 自己位置推定
 amcl:
   ros__parameters:
     use_sim_time: False
@@ -56,6 +57,351 @@ amcl:
     z_max: 0.05
     z_rand: 0.10 # ランダムな確率 default: 0.5
     scan_topic: scan3 # スキャンデータのトピック名
+
+# 地図上の障害物情報を扱うコストマップ
+global_costmap:
+  global_costmap:
+    ros__parameters:
+      use_sim_time: False
+      update_frequency: 1.0 # 1.0 変えないほうがいい
+      publish_frequency: 1.0
+      global_frame: map # ✅ 長距離・経路計画用
+      robot_base_frame: base_footprint # default: base_link
+      footprint: "[ [0.40, 0.35], [0.40, -0.35], [-0.60, -0.35], [-0.60, 0.35] ]" # ロボットの形状 (10cmマージン, 横は5cmマージン)
+      resolution: 0.05 # 0.05 -> 0.10 (軽量化のため)
+      track_unknown_space: true
+      plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
+      obstacle_layer:
+        plugin: "nav2_costmap_2d::ObstacleLayer"
+        enabled: True
+        observation_sources: scan
+        scan:
+          topic: /scan3
+          max_obstacle_height: 2.0
+          clearing: True
+          marking: True
+          data_type: "LaserScan"
+          raytrace_max_range: 20.0
+          raytrace_min_range: 0.0
+          obstacle_max_range: 18.0
+          obstacle_min_range: 0.0
+      static_layer:
+        plugin: "nav2_costmap_2d::StaticLayer"
+        map_subscribe_transient_local: True
+      inflation_layer:
+        plugin: "nav2_costmap_2d::InflationLayer"
+        cost_scaling_factor: 3.0 # ここをゆるくしておかないと、頑張れば通れそうなところで立ち往生しちゃう。
+        inflation_radius: 0.75 # こうしないと、青色に車体が入って動かなくなる
+      always_send_full_costmap: True
+
+# グローバルパス生成
+planner_server:
+  ros__parameters:
+    use_sim_time: true
+    expected_planner_frequency: 10.0 # 10.0 -> 1.0 (頻繁な経路更新を抑制)
+    planner_plugins: ["GridBased"]
+    costmap_update_timeout: 1.0
+    GridBased:
+      plugin: "nav2_navfn_planner/NavfnPlanner"
+      tolerance: 0.5
+      use_astar: true
+      allow_unknown: true
+
+# グローバルパスを滑らかにする
+smoother_server:
+  ros__parameters:
+    use_sim_time: False
+    smoother_plugins: ["simple_smoother"]
+    simple_smoother:
+      plugin: "nav2_smoother::SimpleSmoother"
+      tolerance: 1.0e-10
+      max_its: 1000
+      do_refinement: True
+      w_smooth: 0.3
+      w_data: 0.2
+
+# ロボットの近くの障害物情報を扱うコストマップ
+local_costmap:
+  local_costmap:
+    ros__parameters:
+      use_sim_time: False
+      update_frequency: 5.0 # 軽量化 5.0 -> 3.0
+      publish_frequency: 3.0
+      global_frame: odom # ✅ 短距離・リアルタイム制御用, MapだとAMCLのジャンプで軌道が乱れる
+      robot_base_frame: base_footprint # default: base_link
+      rolling_window: true
+      width: 5
+      height: 5
+      resolution: 0.05
+      # footprint: "[ [0.30, 0.30], [0.30, -0.30], [-0.50, -0.30], [-0.50, 0.30] ]" # ロボットの形状（ぴったりサイズ）
+      footprint: "[ [0.40, 0.35], [0.40, -0.35], [-0.60, -0.35], [-0.60, 0.35] ]" # ロボットの形状 (10cmマージン, 横は5cmマージン) これをでかくしすぎるとパスが引けなくなる
+      plugins: ["stvl_layer", "obstacle_layer", "inflation_layer"]
+      track_unknown_space: true 
+      static_layer:
+        plugin: "nav2_costmap_2d::StaticLayer"
+        map_subscribe_transient_local: True
+      stvl_layer:
+        plugin: "spatio_temporal_voxel_layer/SpatioTemporalVoxelLayer" # 時空間ボクセルレイヤープラグイン
+        enabled: true # レイヤーを有効化
+        voxel_decay: 0.5 # ボクセル減衰時間（秒）- 線形なら秒単位、指数関数なら e^n
+        decay_model: 0 # 減衰モデル（0=線形、1=指数関数、-1=永続的）
+        voxel_size: 0.10 # ボクセルサイズ（メートル）
+        track_unknown_space: true # 未知の領域を追跡するかどうか（デフォルトは既知）
+        mark_threshold: 0 # 障害物としてマークするボクセル高さの閾値
+        update_footprint_enabled: true # ロボットの足跡を更新するかどうか
+        combination_method: 1 # レイヤー結合方法（1=最大値、0=上書き）
+        origin_z: 0.0 # Z原点（メートル）
+        publish_voxel_map: true # ボクセルマップを公開するかどうか（デフォルトはオフ）
+        transform_tolerance: 2.0 # 変換許容時間（秒）
+        mapping_mode: false # マッピングモード（デフォルトはオフ、ナビゲーション以外の用途でマップを保存）
+        map_save_duration: 60.0 # マップの自動保存間隔（秒）、デフォルトは60秒
+        observation_sources: rgbd1_mark rgbd1_clear # 観測ソース
+
+        # 障害物を追加
+        rgbd1_mark:
+          enabled: true # 有効化（サービスコールで切り替え可能）
+          data_type: PointCloud2 # データ型
+          topic: /velodyne_points # 点群トピック
+          marking: true # 障害物をマークするかどうか
+          clearing: false # 障害物をクリアするかどうか
+          obstacle_range: 20.0 # 障害物検知範囲（メートル）
+          min_obstacle_height: 0.3 # 最小障害物高さ（メートル）、デフォルトは0
+          max_obstacle_height: 2.0 # 最大障害物高さ（メートル）、デフォルトは3
+          expected_update_rate: 0.0 # 期待更新レート、この速度で更新されない場合はバッファから削除
+          observation_persistence: 0.0 # 観測持続時間、値が0の場合は最新の測定値のみ使用
+          inf_is_valid: false # 無限値が有効かどうか（レーザースキャン用）
+          filter: "voxel" # フィルタータイプ（"voxel"、"passthrough"、またはフィルタなし）
+          clear_after_reading: true # 読み取り後にバッファをクリアするかどうか
+
+        # 障害物を削除
+        rgbd1_clear:
+          enabled: true # 有効化（サービスコールで切り替え可能）
+          data_type: PointCloud2 # データ型
+          topic: /velodyne_points # 点群トピック
+          marking: false # 障害物をマークしない
+          clearing: true # 障害物をクリアする
+          max_z: 8.0 # 最大Z値（メートル）、デフォルトは0
+          min_z: 0.0 # 最小Z値（メートル）、デフォルトは10
+          vertical_fov_angle: 0.523 # 垂直視野角（ラジアン）、デフォルトは0.7
+          vertical_fov_padding: 0.05 # 3DライダーのパディングF（メートル）
+          horizontal_fov_angle: 6.29 # 水平視野角（ラジアン）、VLP16などは360度（約6.29ラジアン）
+          decay_acceleration: 5.0 # 減衰加速度（1/s^2）、デフォルトは0
+          model_type: 1 # フラスタムのモデルタイプ（0=深度カメラ、1=VLP16などの3Dライダー）
+      obstacle_layer:
+        plugin: "nav2_costmap_2d::ObstacleLayer"
+        enabled: True
+        observation_sources: scan
+        scan:
+          topic: /hokuyo_scan
+          max_obstacle_height: 2.0
+          clearing: True
+          marking: True
+          data_type: "LaserScan"
+          raytrace_max_range: 15.0
+          raytrace_min_range: 0.0
+          obstacle_max_range: 10.0
+          obstacle_min_range: 0.0
+      inflation_layer:
+        plugin: "nav2_costmap_2d::InflationLayer"
+        cost_scaling_factor: 5.0 # コストの減少率(小さいほど急激に減少。ロボットが近づけない距離が広がる) ゆるくしておかないと，頑張れば通れそうなところで立ち往生しちゃう。
+        inflation_radius: 0.75 # ロボットが近づけない距離
+      always_send_full_costmap: True
+
+# ローカルパス生成・追従
+controller_server:
+  ros__parameters:
+    use_sim_time: False
+    controller_frequency: 15.0 # 20.0 -> 15.0 制御ループの周波数（高いほど応答性良・負荷大）
+    costmap_update_timeout: 0.30
+    min_x_velocity_threshold: 0.1
+    min_y_velocity_threshold: 0.5  # 差動駆動なので意味はない
+    min_theta_velocity_threshold: 0.1
+    failure_tolerance: 0.5
+    progress_checker_plugins: ["progress_checker"]
+    goal_checker_plugins: ["general_goal_checker"] # "precise_goal_checker"
+    controller_plugins: ["FollowPath"]
+    use_realtime_priority: false
+
+    # Progress checker parameters
+    # ロボットが指定時間内に指定距離動けない場合に失敗と判定
+    progress_checker:
+      plugin: "nav2_controller::SimpleProgressChecker"
+      required_movement_radius: 0.3  # この半径[m]内に留まると失敗（0.3→0.2でさらに寛容に）
+      movement_time_allowance: 25.0  # 判定までの猶予時間[s]（15→20秒に延長）
+    # Goal checker parameters
+    #precise_goal_checker:
+    #  plugin: "nav2_controller::SimpleGoalChecker"
+    #  xy_goal_tolerance: 0.25
+    #  yaw_goal_tolerance: 0.25
+    #  stateful: True
+    general_goal_checker:
+      stateful: True
+      plugin: "nav2_controller::SimpleGoalChecker"
+      xy_goal_tolerance: 0.25
+      yaw_goal_tolerance: 0.25
+    FollowPath:
+      plugin: "nav2_mppi_controller::MPPIController"
+      time_steps: 60  # 80 -> 60
+      model_dt: 0.07 # 0.05→0.07,  1/20 = 0.05, 1/15 = 0.06666...  制御周期に合わせる
+      batch_size: 1000  # 2000→1500 計算負荷を半減（制御ループ遅延対策）
+
+      ax_max: 2.5
+      ax_min: -2.5 # 急ブレーキのために(無根拠)
+      ay_max: 0.0
+      ay_min: -2.0
+      az_max: 3.0
+
+      vx_std: 0.35
+      vy_std: 0.00
+      wz_std: 0.60
+
+      vx_max: 1.3
+      vx_min: -0.8 # 後退は控えめに
+      vy_max: 0.0
+      wz_max: 2.3
+
+      iteration_count: 1
+      prune_distance: 2.0 # より遠くまで軌道を維持
+      transform_tolerance: 0.1
+      temperature: 0.50
+      gamma: 0.020
+      motion_model: "DiffDrive"
+      visualize: true
+      regenerate_noises: true
+      TrajectoryVisualizer:
+        trajectory_step: 5
+        time_step: 3
+      AckermannConstraints:
+        min_turning_r: 0.0 # default 0.2 あったほうがいいのかも
+      
+      # Critics: 軌道評価基準のリスト（複数の基準でベスト軌道を選択）
+      # 各criticがコストを計算し、合計コストが最小の軌道を選ぶ
+      # cost = Σ(cost_weight × (評価値 ^ cost_power))
+      critics: [
+        "ConstraintCritic", "CostCritic", "GoalCritic",
+        "GoalAngleCritic", "PathAlignCritic", "PathFollowCritic",
+        "PathAngleCritic", "PreferForwardCritic"]
+      
+      # ConstraintCritic: 物理的制約（速度・加速度制限）の評価
+      # ロボットの動力学的制約を満たさない軌道にペナルティを与える
+      ConstraintCritic:
+        enabled: true
+        cost_power: 1              # コストの累乗（1=線形、2=二次的にペナルティ増加）
+        cost_weight: 4.0           # この評価基準の重み（大きいほど影響大） 急な動きを抑制 4.0 -> 6.0
+      
+      # GoalCritic: ゴールへの接近度評価
+      # ゴールに近づく軌道を優先（距離が近いほどコスト低）
+      GoalCritic:
+        enabled: true
+        cost_power: 1
+        cost_weight: 10.0           # ゴール到達を重視（高め） 5.0 -> 3.0 パス追従を優先
+        threshold_to_consider: 1.4 # この距離[m]以内でゴール評価開始
+      
+      # GoalAngleCritic: ゴール時の姿勢（角度）評価
+      # ゴール地点での向きを正確に合わせる（最終姿勢の精度）
+      GoalAngleCritic:
+        enabled: true
+        cost_power: 1
+        cost_weight: 3.0           # 姿勢精度の重視度（中程度）
+        threshold_to_consider: 0.5 # この距離[m]以内で角度評価開始
+      
+      # PreferForwardCritic: 前進優先評価
+      # 後退より前進を優先（バック走行にペナルティ）
+      PreferForwardCritic:
+        enabled: true
+        cost_power: 1
+        cost_weight: 1.5           # 前進を強く優先
+        threshold_to_consider: 2.5 # この距離[m]以内で前進優先評価
+      
+      # CostCritic: コストマップ（障害物）評価
+      # 障害物に近い軌道にペナルティ（衝突回避の核心）!!!!!!!!!!! 超超重要
+      CostCritic:
+        enabled: true
+        cost_power: 1
+        cost_weight: 10.0              # 障害物回避の重み(高いほど、パスからそれて避ける) 3.81 -> 3.0
+        near_collision_cost: 150       # 衝突手前のコスト閾値 253 -> 200
+        critical_cost: 250.0           # 危険レベルのコスト閾値　300 -> 250 危険判定を厳しく
+        consider_footprint: true      # フットプリント全体で評価するか（false=中心点のみ） これでフットプリントが干渉しているとき動かない
+        collision_cost: 1000000.0      # 衝突時の高ペナルティ（実質的に選択されない）
+        near_goal_distance: 1.0        # ゴール付近[m]での評価調整
+        trajectory_point_step: 1       # 軌道上の評価点間隔（大きいほど高速・粗い） 2 -> 1 
+      
+      # PathAlignCritic: 経路整合性評価
+      # グローバルパスに沿った軌道を優先（パスから外れにくくする）
+      PathAlignCritic:
+        enabled: true
+        cost_power: 1
+        cost_weight: 5.0              # パス追従を強く重視（最も高い重み） 14.0 -> 20.0
+        max_path_occupancy_ratio: 0.20 # パス上の障害物許容率（5% -> 15%に緩和）
+        trajectory_point_step: 4       # 評価点間隔 4 -> 3
+        threshold_to_consider: 1.0     # この距離[m]以内でパス整合評価 0.5 -> 1.0
+        offset_from_furthest: 25       # 最遠点からのオフセット（先読み距離）20 -> 25
+        use_path_orientations: false   # パスの向き情報を使うか
+      
+      # PathFollowCritic: 経路追従評価
+      # グローバルパスの進行方向に従う（パスに沿って進む）
+      PathFollowCritic:
+        enabled: true
+        cost_power: 1
+        cost_weight: 2.0               # 経路追従の重視度 5.0 -> 10.0
+        offset_from_furthest: 8        # 先読み距離[points]（パス上の何点先を見るか） 5 -> 8
+        threshold_to_consider: 2.0     # この距離[m]以内で追従評価 1.4 -> 2.0
+      
+      # PathAngleCritic: 経路角度評価
+      # パスの向きと軌道の向きの一致度（滑らかな追従）
+      PathAngleCritic:
+        enabled: true
+        cost_power: 1
+        cost_weight: 2.0               # 角度一致の重視度（低め）
+        offset_from_furthest: 6        # 先読み距離[points] 4 -> 6
+        threshold_to_consider: 1.0     # この距離[m]以内で角度評価 0.5 -> 1.0
+        max_angle_to_furthest: 1.2     # 最大許容角度差[rad]（約57度） 1.0 -> 1.2 (寛容に)
+        mode: 0                       # 評価モード（0=標準）
+
+      # その場旋回を抑制する評価
+      TwirlingCritic:
+        enabled: true
+        twirling_cost_power: 1
+        twirling_cost_weight: 1.0
+
+# 速度指令を滑らかにする
+velocity_smoother:
+  ros__parameters:
+    use_sim_time: False
+    smoothing_frequency: 20.0
+    scale_velocities: False
+    feedback: "OPEN_LOOP"
+    # max_velocity: [1.0, 0.0, 2.0]
+    # min_velocity: [-1.0, 0.0, -2.0]
+    # max_accel: [2.5, 0.0, 3.2]
+    # max_decel: [-2.5, 0.0, -3.2]
+    max_velocity: [1.30, 0.0, 2.30]
+    min_velocity: [-0.50, 0.0, -2.30]
+    max_accel: [2.0, 0.0, 2.00]
+    max_decel: [-2.0, 0.0, -2.00]
+    odom_topic: "odom"
+    odom_duration: 0.1
+    deadband_velocity: [0.0, 0.0, 0.0]
+    velocity_timeout: 1.0
+
+# ----------------------------------------
+# その他
+# ----------------------------------------
+
+map_server:
+  ros__parameters:
+    use_sim_time: False
+    # Overridden in launch by the "map" launch configuration or provided default value.
+    # To use in yaml, remove the default "map" value in the tb3_simulation_launch.py file & provide full path to map below.
+    yaml_filename: ""
+
+map_saver:
+  ros__parameters:
+    use_sim_time: False
+    save_map_timeout: 10000 # タイムアウト時間[s] default: 5.0 (5 -> 10000)
+    free_thresh_default: 0.25
+    occupied_thresh_default: 0.65
+    map_subscribe_transient_local: True
 
 bt_navigator:
   ros__parameters:
@@ -127,309 +473,6 @@ bt_navigator_navigate_to_pose_rclcpp_node:
   ros__parameters:
     use_sim_time: False
 
-controller_server:
-  ros__parameters:
-    use_sim_time: False
-    controller_frequency: 15.0 # 20.0 -> 15.0 制御ループの周波数（高いほど応答性良・負荷大）
-    costmap_update_timeout: 0.30
-    min_x_velocity_threshold: 0.01
-    min_y_velocity_threshold: 0.5
-    min_theta_velocity_threshold: 0.01
-    failure_tolerance: 0.5
-    progress_checker_plugins: ["progress_checker"]
-    goal_checker_plugins: ["general_goal_checker"] # "precise_goal_checker"
-    controller_plugins: ["FollowPath"]
-    use_realtime_priority: false
-
-    # Progress checker parameters
-    # ロボットが指定時間内に指定距離動けない場合に失敗と判定
-    progress_checker:
-      plugin: "nav2_controller::SimpleProgressChecker"
-      required_movement_radius: 0.3  # この半径[m]内に留まると失敗（0.3→0.2でさらに寛容に）
-      movement_time_allowance: 25.0  # 判定までの猶予時間[s]（15→20秒に延長）
-    # Goal checker parameters
-    #precise_goal_checker:
-    #  plugin: "nav2_controller::SimpleGoalChecker"
-    #  xy_goal_tolerance: 0.25
-    #  yaw_goal_tolerance: 0.25
-    #  stateful: True
-    general_goal_checker:
-      stateful: True
-      plugin: "nav2_controller::SimpleGoalChecker"
-      xy_goal_tolerance: 0.25
-      yaw_goal_tolerance: 0.25
-    FollowPath:
-      plugin: "nav2_mppi_controller::MPPIController"
-      time_steps: 60  # 80 -> 60
-      model_dt: 0.07 # 0.05→0.07,  1/20 = 0.05, 1/15 = 0.06666...  制御周期に合わせる
-      batch_size: 1000  # 2000→1500 計算負荷を半減（制御ループ遅延対策）
-
-      ax_max: 2.5
-      ax_min: -2.5 # 急ブレーキのために(無根拠)
-      ay_max: 0.0
-      ay_min: -2.0
-      az_max: 3.0
-
-      vx_std: 0.35
-      vy_std: 0.00
-      wz_std: 0.60
-
-      vx_max: 1.3
-      vx_min: -0.8 # 後退は控えめに
-      vy_max: 0.0
-      wz_max: 2.3
-
-      iteration_count: 1
-      prune_distance: 2.0 # より遠くまで軌道を維持
-      transform_tolerance: 0.1
-      temperature: 0.35
-      gamma: 0.020
-      motion_model: "DiffDrive"
-      visualize: true
-      regenerate_noises: true
-      TrajectoryVisualizer:
-        trajectory_step: 5
-        time_step: 3
-      AckermannConstraints:
-        min_turning_r: 0.0 # default 0.2 あったほうがいいのかも
-      
-      # Critics: 軌道評価基準のリスト（複数の基準でベスト軌道を選択）
-      # 各criticがコストを計算し、合計コストが最小の軌道を選ぶ
-      # cost = Σ(cost_weight × (評価値 ^ cost_power))
-      critics: [
-        "ConstraintCritic", "CostCritic", "GoalCritic",
-        "GoalAngleCritic", "PathAlignCritic", "PathFollowCritic",
-        "PathAngleCritic", "PreferForwardCritic"]
-      
-      # ConstraintCritic: 物理的制約（速度・加速度制限）の評価
-      # ロボットの動力学的制約を満たさない軌道にペナルティを与える
-      ConstraintCritic:
-        enabled: true
-        cost_power: 1              # コストの累乗（1=線形、2=二次的にペナルティ増加）
-        cost_weight: 4.0           # この評価基準の重み（大きいほど影響大） 急な動きを抑制 4.0 -> 6.0
-      
-      # GoalCritic: ゴールへの接近度評価
-      # ゴールに近づく軌道を優先（距離が近いほどコスト低）
-      GoalCritic:
-        enabled: true
-        cost_power: 1
-        cost_weight: 3.0           # ゴール到達を重視（高め） 5.0 -> 3.0 パス追従を優先
-        threshold_to_consider: 1.4 # この距離[m]以内でゴール評価開始
-      
-      # GoalAngleCritic: ゴール時の姿勢（角度）評価
-      # ゴール地点での向きを正確に合わせる（最終姿勢の精度）
-      GoalAngleCritic:
-        enabled: true
-        cost_power: 1
-        cost_weight: 3.0           # 姿勢精度の重視度（中程度）
-        threshold_to_consider: 0.5 # この距離[m]以内で角度評価開始
-      
-      # PreferForwardCritic: 前進優先評価
-      # 後退より前進を優先（バック走行にペナルティ）
-      PreferForwardCritic:
-        enabled: true
-        cost_power: 1
-        cost_weight: 1.5           # 前進を強く優先
-        threshold_to_consider: 2.5 # この距離[m]以内で前進優先評価
-      
-      # CostCritic: コストマップ（障害物）評価
-      # 障害物に近い軌道にペナルティ（衝突回避の核心）!!!!!!!!!!! 超超重要
-      CostCritic:
-        enabled: true
-        cost_power: 1
-        cost_weight: 10.0              # 障害物回避の重み(高いほど、パスからそれて避ける) 3.81 -> 3.0
-        near_collision_cost: 150       # 衝突手前のコスト閾値 253 -> 200
-        critical_cost: 250.0           # 危険レベルのコスト閾値　300 -> 250 危険判定を厳しく
-        consider_footprint: true      # フットプリント全体で評価するか（false=中心点のみ） これでフットプリントが干渉しているとき動かない
-        collision_cost: 1000000.0      # 衝突時の高ペナルティ（実質的に選択されない）
-        near_goal_distance: 1.0        # ゴール付近[m]での評価調整
-        trajectory_point_step: 1       # 軌道上の評価点間隔（大きいほど高速・粗い） 2 -> 1 
-      
-      # PathAlignCritic: 経路整合性評価
-      # グローバルパスに沿った軌道を優先（パスから外れにくくする）
-      PathAlignCritic:
-        enabled: true
-        cost_power: 1
-        cost_weight: 5.0              # パス追従を強く重視（最も高い重み） 14.0 -> 20.0
-        max_path_occupancy_ratio: 0.20 # パス上の障害物許容率（5% -> 15%に緩和）
-        trajectory_point_step: 4       # 評価点間隔 4 -> 3
-        threshold_to_consider: 1.0     # この距離[m]以内でパス整合評価 0.5 -> 1.0
-        offset_from_furthest: 25       # 最遠点からのオフセット（先読み距離）20 -> 25
-        use_path_orientations: false   # パスの向き情報を使うか
-      
-      # PathFollowCritic: 経路追従評価
-      # グローバルパスの進行方向に従う（パスに沿って進む）
-      PathFollowCritic:
-        enabled: true
-        cost_power: 1
-        cost_weight: 2.0               # 経路追従の重視度 5.0 -> 10.0
-        offset_from_furthest: 8        # 先読み距離[points]（パス上の何点先を見るか） 5 -> 8
-        threshold_to_consider: 2.0     # この距離[m]以内で追従評価 1.4 -> 2.0
-      
-      # PathAngleCritic: 経路角度評価
-      # パスの向きと軌道の向きの一致度（滑らかな追従）
-      PathAngleCritic:
-        enabled: true
-        cost_power: 1
-        cost_weight: 2.0               # 角度一致の重視度（低め）
-        offset_from_furthest: 6        # 先読み距離[points] 4 -> 6
-        threshold_to_consider: 1.0     # この距離[m]以内で角度評価 0.5 -> 1.0
-        max_angle_to_furthest: 1.2     # 最大許容角度差[rad]（約57度） 1.0 -> 1.2 (寛容に)
-        mode: 0                        # 評価モード（0=標準）
-      # TwirlingCritic:
-      #   enabled: true
-      #   twirling_cost_power: 1
-      #   twirling_cost_weight: 10.0
-
-local_costmap:
-  local_costmap:
-    ros__parameters:
-      use_sim_time: False
-      update_frequency: 3.0 # 軽量化 5.0 -> 3.0
-      publish_frequency: 2.0
-      global_frame: odom # ✅ 短距離・リアルタイム制御用, MapだとAMCLのジャンプで軌道が乱れる
-      robot_base_frame: base_footprint # default: base_link
-      rolling_window: true
-      width: 5
-      height: 5
-      resolution: 0.05
-      # footprint: "[ [0.30, 0.30], [0.30, -0.30], [-0.50, -0.30], [-0.50, 0.30] ]" # ロボットの形状（ぴったりサイズ）
-      footprint: "[ [0.40, 0.35], [0.40, -0.35], [-0.60, -0.35], [-0.60, 0.35] ]" # ロボットの形状 (10cmマージン, 横は5cmマージン) これをでかくしすぎるとパスが引けなくなる
-      plugins: ["inflation_layer", "static_layer"]
-      track_unknown_space: true 
-      inflation_layer:
-        plugin: "nav2_costmap_2d::InflationLayer"
-        cost_scaling_factor: 10.0 # コストの減少率(小さいほど急激に減少。ロボットが近づけない距離が広がる)
-        inflation_radius: 0.75 # ロボットが近づけない距離
-      static_layer:
-        plugin: "nav2_costmap_2d::StaticLayer"
-        map_subscribe_transient_local: True
-      always_send_full_costmap: True
-
-global_costmap:
-  global_costmap:
-    ros__parameters:
-      use_sim_time: False
-      update_frequency: 1.0 # 1.0 変えないほうがいい
-      publish_frequency: 1.0
-      global_frame: map # ✅ 長距離・経路計画用
-      robot_base_frame: base_footprint # default: base_link
-      footprint: "[ [0.40, 0.35], [0.40, -0.35], [-0.60, -0.35], [-0.60, 0.35] ]" # ロボットの形状 (10cmマージン, 横は5cmマージン)
-      resolution: 0.05 # 0.05 -> 0.10 (軽量化のため)
-      track_unknown_space: true
-      plugins: ["static_layer","stvl_layer","obstacle_layer","inflation_layer"]
-      # リアルタイムで出てくる障害物に枠付するのはこれ。
-      # sudo apt install ros-jazzy-spatio-temporal-voxel-layer
-      stvl_layer:
-        plugin: "spatio_temporal_voxel_layer/SpatioTemporalVoxelLayer" # 時空間ボクセルレイヤープラグイン
-        enabled: true # レイヤーを有効化
-        voxel_decay: 0.5 # ボクセル減衰時間（秒）- 線形なら秒単位、指数関数なら e^n
-        decay_model: 0 # 減衰モデル（0=線形、1=指数関数、-1=永続的）
-        voxel_size: 0.10 # ボクセルサイズ（メートル）
-        track_unknown_space: true # 未知の領域を追跡するかどうか（デフォルトは既知）
-        mark_threshold: 0 # 障害物としてマークするボクセル高さの閾値
-        update_footprint_enabled: true # ロボットの足跡を更新するかどうか
-        combination_method: 1 # レイヤー結合方法（1=最大値、0=上書き）
-        origin_z: 0.0 # Z原点（メートル）
-        publish_voxel_map: true # ボクセルマップを公開するかどうか（デフォルトはオフ）
-        transform_tolerance: 2.0 # 変換許容時間（秒）
-        mapping_mode: false # マッピングモード（デフォルトはオフ、ナビゲーション以外の用途でマップを保存）
-        map_save_duration: 60.0 # マップの自動保存間隔（秒）、デフォルトは60秒
-        observation_sources: rgbd1_mark rgbd1_clear # 観測ソース
-
-        # 障害物を追加
-        rgbd1_mark:
-          enabled: true # 有効化（サービスコールで切り替え可能）
-          data_type: PointCloud2 # データ型
-          topic: /velodyne_points # 点群トピック
-          marking: true # 障害物をマークするかどうか
-          clearing: false # 障害物をクリアするかどうか
-          obstacle_range: 20.0 # 障害物検知範囲（メートル）
-          min_obstacle_height: 0.3 # 最小障害物高さ（メートル）、デフォルトは0
-          max_obstacle_height: 2.0 # 最大障害物高さ（メートル）、デフォルトは3
-          expected_update_rate: 0.0 # 期待更新レート、この速度で更新されない場合はバッファから削除
-          observation_persistence: 0.0 # 観測持続時間、値が0の場合は最新の測定値のみ使用
-          inf_is_valid: false # 無限値が有効かどうか（レーザースキャン用）
-          filter: "voxel" # フィルタータイプ（"voxel"、"passthrough"、またはフィルタなし）
-          clear_after_reading: true # 読み取り後にバッファをクリアするかどうか
-
-        # 障害物を削除
-        rgbd1_clear:
-          enabled: true # 有効化（サービスコールで切り替え可能）
-          data_type: PointCloud2 # データ型
-          topic: /velodyne_points # 点群トピック
-          marking: false # 障害物をマークしない
-          clearing: true # 障害物をクリアする
-          max_z: 8.0 # 最大Z値（メートル）、デフォルトは0
-          min_z: 0.0 # 最小Z値（メートル）、デフォルトは10
-          vertical_fov_angle: 0.523 # 垂直視野角（ラジアン）、デフォルトは0.7
-          vertical_fov_padding: 0.05 # 3DライダーのパディングF（メートル）
-          horizontal_fov_angle: 6.29 # 水平視野角（ラジアン）、VLP16などは360度（約6.29ラジアン）
-          decay_acceleration: 5.0 # 減衰加速度（1/s^2）、デフォルトは0
-          model_type: 1 # フラスタムのモデルタイプ（0=深度カメラ、1=VLP16などの3Dライダー）
-      # リアルタイムで出てくる障害物に枠付するのはこれ。
-      obstacle_layer:
-        plugin: "nav2_costmap_2d::ObstacleLayer"
-        enabled: True
-        observation_sources: scan
-        scan:
-          topic: /hokuyo_scan
-          max_obstacle_height: 2.0
-          clearing: True
-          marking: True
-          data_type: "LaserScan"
-          raytrace_max_range: 20.0
-          raytrace_min_range: 0.0
-          obstacle_max_range: 18.0
-          obstacle_min_range: 0.0
-      static_layer:
-        plugin: "nav2_costmap_2d::StaticLayer"
-        map_subscribe_transient_local: True
-      inflation_layer:
-        plugin: "nav2_costmap_2d::InflationLayer"
-        cost_scaling_factor: 20.0 # ここをゆるくしておかないと、頑張れば通れそうなところで立ち往生しちゃう。
-        inflation_radius: 0.75 # こうしないと、青色に車体が入って動かなくなる
-      always_send_full_costmap: True
-
-map_server:
-  ros__parameters:
-    use_sim_time: False
-    # Overridden in launch by the "map" launch configuration or provided default value.
-    # To use in yaml, remove the default "map" value in the tb3_simulation_launch.py file & provide full path to map below.
-    yaml_filename: ""
-
-map_saver:
-  ros__parameters:
-    use_sim_time: False
-    save_map_timeout: 10000 # タイムアウト時間[s] default: 5.0 (5 -> 10000)
-    free_thresh_default: 0.25
-    occupied_thresh_default: 0.65
-    map_subscribe_transient_local: True
-
-planner_server:
-  ros__parameters:
-    use_sim_time: true
-    expected_planner_frequency: 10.0 # 10.0 -> 1.0 (頻繁な経路更新を抑制)
-    planner_plugins: ["GridBased"]
-    costmap_update_timeout: 1.0
-    GridBased:
-      plugin: "nav2_navfn_planner/NavfnPlanner"
-      tolerance: 0.5
-      use_astar: true
-      allow_unknown: true
-
-smoother_server:
-  ros__parameters:
-    use_sim_time: False
-    smoother_plugins: ["simple_smoother"]
-    simple_smoother:
-      plugin: "nav2_smoother::SimpleSmoother"
-      tolerance: 1.0e-10
-      max_its: 1000
-      do_refinement: True
-      w_smooth: 0.3
-      w_data: 0.2
-
 behavior_server:
   ros__parameters:
     costmap_topic: local_costmap/costmap_raw
@@ -472,22 +515,3 @@ waypoint_follower:
       plugin: "nav2_waypoint_follower::WaitAtWaypoint"
       enabled: True
       waypoint_pause_duration: 100 # ウェイポイント到達後の待機時間[ms] default: 200
-
-velocity_smoother:
-  ros__parameters:
-    use_sim_time: False
-    smoothing_frequency: 20.0
-    scale_velocities: False
-    feedback: "OPEN_LOOP"
-    # max_velocity: [1.0, 0.0, 2.0]
-    # min_velocity: [-1.0, 0.0, -2.0]
-    # max_accel: [2.5, 0.0, 3.2]
-    # max_decel: [-2.5, 0.0, -3.2]
-    max_velocity: [1.30, 0.0, 2.30]
-    min_velocity: [-0.50, 0.0, -2.30]
-    max_accel: [3.0, 0.0, 2.80]
-    max_decel: [-3.0, 0.0, -2.80]
-    odom_topic: "odom"
-    odom_duration: 0.1
-    deadband_velocity: [0.0, 0.0, 0.0]
-    velocity_timeout: 1.0
