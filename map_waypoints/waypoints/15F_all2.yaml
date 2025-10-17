@@ -17,22 +17,30 @@ waypoints:
   y: -10.15
   angle_radians: -1.46
 - number: 5
-  x: 1.75
-  y: -15.0
-  angle_radians: 1.626
+  x: 1.85
+  y: -15.1
+  angle_radians: -1.474
 - number: 6
-  x: 1.35
-  y: -10.05
-  angle_radians: 1.635
+  x: 1.95
+  y: -17.65
+  angle_radians: 0.036
 - number: 7
-  x: 1.0
-  y: -4.4
-  angle_radians: 1.656
+  x: 4.45
+  y: -17.55
+  angle_radians: 1.678
 - number: 8
-  x: 0.75
-  y: -0.1
-  angle_radians: 0.0
+  x: 4.15
+  y: -15.35
+  angle_radians: 0.128
 - number: 9
+  x: 8.4
+  y: -15.0
+  angle_radians: 1.739
+- number: 10
+  x: 7.9
+  y: -8.6
+  angle_radians: 1.727
+- number: 11
   x: 7.5
   y: -2.45
-  angle_radians: -3.005
+  angle_radians: -2.886

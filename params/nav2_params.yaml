@@ -256,7 +256,7 @@ controller_server:
       # これは速度の分散を決めるものであり，低くするとよくある速度が足りなくて動けなくなる
       vx_std: 0.35
       vy_std: 0.00
-      wz_std: 0.60
+      wz_std: 1.00
 
       vx_max: 1.3
       vx_min: -0.8 # 後退は控えめに
