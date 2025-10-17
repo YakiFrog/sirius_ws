@@ -28,7 +28,7 @@ amcl:
     do_beamskip: True # ビームスキップを行うかどうか default: False
 
     lambda_short: 0.1
-    laser_likelihood_max_dist: 100.0 # レーザの尤度の最大距離[m] default: 2.0
+    laser_likelihood_max_dist: 10.0 # レーザの尤度の最大距離[m] default: 2.0
     laser_max_range: 100.0
     laser_min_range: -1.0
     laser_model_type: "likelihood_field" # prob
@@ -47,7 +47,7 @@ amcl:
     robot_model_type: "nav2_amcl::DifferentialMotionModel"
     save_pose_rate: 0.5
 
-    sigma_hit: 0.2 # ヒットの標準偏差 default: 0.2 -> 0.1 (0615)
+    sigma_hit: 0.15 # ヒットの標準偏差 default: 0.2 -> 0.1 (0615)
     tf_broadcast: True
     transform_tolerance: 0.5 # 1.0
     update_min_a: 0.05 # パーティクルフィルタの更新の閾値 default: 0.2
@@ -216,7 +216,7 @@ controller_server:
     controller_frequency: 10.0 # 20.0 -> 15.0 制御ループの周波数（高いほど応答性良・負荷大）
     costmap_update_timeout: 0.30
     min_x_velocity_threshold: 0.1
-    min_y_velocity_threshold: 0.5  # 差動駆動なので意味はない
+    min_y_velocity_threshold: 0.0  # 差動駆動なので意味はない
     min_theta_velocity_threshold: 0.1
     failure_tolerance: 0.5
     progress_checker_plugins: ["progress_checker"]
@@ -267,7 +267,7 @@ controller_server:
       prune_distance: 3.5 # より遠くまで軌道を維持
       transform_tolerance: 0.1
       temperature: 0.25
-      gamma: 0.030
+      gamma: 0.050 # 
       motion_model: "DiffDrive"
       visualize: true
       regenerate_noises: true

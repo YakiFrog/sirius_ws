@@ -116,7 +116,7 @@ class Nav2GoalClient(Node):
                 self.distance = math.sqrt(x_distance**2 + y_distance**2)
                 self.get_logger().info(f"Current distance to goal: {self.distance}")
 
-                if self.distance < 1.5:
+                if self.distance < 2.5:
                     self.get_logger().info("Goal reached! Sending next goal...")
                     self.count += 1
                     self.send_goal()
