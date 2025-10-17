@@ -4,16 +4,16 @@ amcl:
     use_sim_time: False
 
     # ロボットの動作モデルのパラメータ
-    alpha1: 0.08 # ロールのノイズの標準偏差（回転によるノイズを減らす）
-    alpha2: 0.08 # ピッチのノイズの標準偏差（並進によるノイズを減らす）
-    alpha3: 0.20 # ヨーのノイズの標準偏差（並進による回転ノイズを少し増やす）
-    alpha4: 0.08 # 進行方向のノイズの標準偏差（回転による並進ノイズを減らす）
-    alpha5: 0.2 # 進行方向のノイズの標準偏差（オムニ用)
+    alpha1: 0.05 # ロールのノイズの標準偏差（回転によるノイズを減らす）
+    alpha2: 0.05 # ピッチのノイズの標準偏差（並進によるノイズを減らす）
+    alpha3: 0.10 # ヨーのノイズの標準偏差（並進による回転ノイズを少し増やす）
+    alpha4: 0.10 # 進行方向のノイズの標準偏差（回転による並進ノイズを減らす）
+    alpha5: 0.00 # 進行方向のノイズの標準偏差（オムニ用)
     base_frame_id: "base_footprint"
     global_frame_id: "map"
 
     # 初期姿勢設定（前方向への偏りを作る）
-    set_initial_pose: true # 初期姿勢設定を有効化
+    set_initial_pose: false # 初期姿勢設定を有効化
     always_reset_initial_pose: false # 初期姿勢を常にリセットするかどうか
     initial_pose:
       x: 0.0
@@ -22,13 +22,13 @@ amcl:
       yaw: 0.0
 
     # ビームスキップのパラメータ
-    beam_skip_distance: 0.5 # ビームスキップの距離[m] レーザービームの測定点が障害物にどれだけ近い場合に「マップと一致している」と判定するかの距離閾値
-    beam_skip_error_threshold: 0.9 # ビームスキップのエラー閾値　スキップされたビームの割合が異常に高い場合に「パーティクルフィルタが間違った位置に収束した」
-    beam_skip_threshold: 0.3 # ビームスキップの閾値　各ビームについて「マップと一致したパーティクルの割合」がどの程度以上の場合にそのビームを位置推定の計算に使用するかを決定
+    beam_skip_distance: 0.2 # ビームスキップの距離[m] レーザービームの測定点が障害物にどれだけ近い場合に「マップと一致している」と判定するかの距離閾値
+    beam_skip_error_threshold: 0.80 # ビームスキップのエラー閾値　スキップされたビームの割合が異常に高い場合に「パーティクルフィルタが間違った位置に収束した」
+    beam_skip_threshold: 0.6 # ビームスキップの閾値　各ビームについて「マップと一致したパーティクルの割合」がどの程度以上の場合にそのビームを位置推定の計算に使用するかを決定
     do_beamskip: True # ビームスキップを行うかどうか default: False
 
     lambda_short: 0.1
-    laser_likelihood_max_dist: 100.0 # レーザの尤度の最大距離[m] default: 2.0
+    laser_likelihood_max_dist: 50.0 # レーザの尤度の最大距離[m] default: 2.0
     laser_max_range: 100.0
     laser_min_range: -1.0
     laser_model_type: "likelihood_field" # prob
@@ -36,12 +36,12 @@ amcl:
     # パーティクルフィルタのパラメータ
     max_beams: 120 # ビームの数 default: 60 -> 120 -> 180 高密度
     max_particles: 3000 # パーティクルの数 default: 2000 -> 3000
-    min_particles: 600 # パーティクルの最小数 default: 500 -> 400 -> 900 -> 600(1007)
+    min_particles: 900 # パーティクルの最小数 default: 500 -> 400 -> 900 -> 600(1007)
     pf_err: 0.10
     pf_z: 0.99
 
     odom_frame_id: "odom"
-    recovery_alpha_fast: 0.01 # リカバリのα値 0.4 -> 0.2 0.4がでかすぎた -> 0.1
+    recovery_alpha_fast: 0.01 # 0.01より下げないほうがいい
     recovery_alpha_slow: 0.02 # リカバリのα値 いれるなら，0.1以上じゃないと動かない -> 0.1
     resample_interval: 1 # リサンプリングの間隔 default: 1
     robot_model_type: "nav2_amcl::DifferentialMotionModel"
@@ -49,7 +49,7 @@ amcl:
 
     sigma_hit: 0.1 # ヒットの標準偏差 default: 0.2 -> 0.1 (0615)
     tf_broadcast: True
-    transform_tolerance: 2.0 # 1.0
+    transform_tolerance: 1.0 # 1.0
     update_min_a: 0.05 # パーティクルフィルタの更新の閾値 default: 0.2
     update_min_d: 0.05 # パーティクルフィルタの更新の閾値 default: 0.25
     z_hit: 0.70 # ヒットの確率 default: 0.5
@@ -256,18 +256,18 @@ controller_server:
       # これは速度の分散を決めるものであり，低くするとよくある速度が足りなくて動けなくなる
       vx_std: 0.35
       vy_std: 0.00
-      wz_std: 0.80
+      wz_std: 0.60
 
-      vx_max: 1.3
+      vx_max: 1.2
       vx_min: -0.8 # 後退は控えめに
       vy_max: 0.0
-      wz_max: 2.3
+      wz_max: 1.8
 
       iteration_count: 1
       prune_distance: 3.5 # より遠くまで軌道を維持
       transform_tolerance: 0.1
-      temperature: 0.50
-      gamma: 0.015
+      temperature: 0.25
+      gamma: 0.030
       motion_model: "DiffDrive"
       visualize: true
       regenerate_noises: true
