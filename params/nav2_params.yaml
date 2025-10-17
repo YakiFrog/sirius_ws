@@ -243,15 +243,15 @@ controller_server:
       yaw_goal_tolerance: 0.25
     FollowPath:
       plugin: "nav2_mppi_controller::MPPIController"
-      time_steps: 60  # 80 -> 60
-      model_dt: 0.07 # 0.05→0.07,  1/20 = 0.05, 1/15 = 0.06666...  制御周期に合わせる
-      batch_size: 2500  # 2000→1500 計算負荷を半減（制御ループ遅延対策）
+      time_steps: 90  # 80 -> 60
+      model_dt: 0.0667 # 0.05→0.07,  1/20 = 0.05, 1/15 = 0.06666...  制御周期に合わせる
+      batch_size: 1500  # 2000→1500 計算負荷を半減（制御ループ遅延対策）
 
-      ax_max: 2.5
-      ax_min: -2.5 # 急ブレーキのために(無根拠)
+      ax_max: 1.2
+      ax_min: -1.8 # 急ブレーキのために(無根拠)
       ay_max: 0.0
       ay_min: -2.0
-      az_max: 3.0
+      az_max: 1.8
 
       vx_std: 0.35
       vy_std: 0.00
@@ -263,10 +263,10 @@ controller_server:
       wz_max: 2.3
 
       iteration_count: 1
-      prune_distance: 2.0 # より遠くまで軌道を維持
+      prune_distance: 3.5 # より遠くまで軌道を維持
       transform_tolerance: 0.1
       temperature: 0.50
-      gamma: 0.020
+      gamma: 0.015
       motion_model: "DiffDrive"
       visualize: true
       regenerate_noises: true
@@ -289,7 +289,7 @@ controller_server:
       ConstraintCritic:
         enabled: true
         cost_power: 1              # コストの累乗（1=線形、2=二次的にペナルティ増加）
-        cost_weight: 4.0           # この評価基準の重み（大きいほど影響大） 急な動きを抑制 4.0 -> 6.0
+        cost_weight: 8.0           # この評価基準の重み（大きいほど影響大） 急な動きを抑制 4.0 -> 6.0
       
       # GoalCritic: ゴールへの接近度評価
       # ゴールに近づく軌道を優先（距離が近いほどコスト低）
