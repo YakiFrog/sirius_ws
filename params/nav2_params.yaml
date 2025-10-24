@@ -47,11 +47,11 @@ amcl:
     robot_model_type: "nav2_amcl::DifferentialMotionModel"
     save_pose_rate: 0.5
 
-    sigma_hit: 0.15 # ヒットの標準偏差 default: 0.2 -> 0.1 (0615)
+    sigma_hit: 0.25 # ヒットの標準偏差 default: 0.2 -> 0.1 (0615) -> 0.25(10/24) いいかわからん
     tf_broadcast: True
     transform_tolerance: 1.0 # 1.0
-    update_min_a: 0.05 # パーティクルフィルタの更新の閾値 default: 0.2
-    update_min_d: 0.05 # パーティクルフィルタの更新の閾値 default: 0.25
+    update_min_a: 0.1 # パーティクルフィルタの更新の閾値 default: 0.2
+    update_min_d: 0.1 # パーティクルフィルタの更新の閾値 default: 0.25
     z_hit: 0.70 # ヒットの確率 default: 0.5
     z_short: 0.15
     z_max: 0.05
@@ -247,8 +247,8 @@ controller_server:
       model_dt: 0.1 # 0.05→0.07,  1/20 = 0.05, 1/15 = 0.06666...  制御周期に合わせる 1/10 = 0.1
       batch_size: 2000  # 2000→1500 計算負荷を半減（制御ループ遅延対策）
 
-      ax_max: 1.2
-      ax_min: -1.2 # 急ブレーキのために(無根拠)
+      ax_max: 1.0
+      ax_min: -1.0 # 急ブレーキのために(無根拠)
       ay_max: 0.0
       ay_min: 0.0
       az_max: 1.80 # axの1.5倍
@@ -258,7 +258,7 @@ controller_server:
       vy_std: 0.00
       wz_std: 0.60
 
-      vx_max: 1.2
+      vx_max: 1.0
       vx_min: -0.8 # 後退は控えめに
       vy_max: 0.0
       wz_max: 1.8
