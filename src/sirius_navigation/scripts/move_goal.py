@@ -151,8 +151,8 @@ class Nav2GoalClient(Node):
                     self.send_goal()
                 
                 # 定期的にゴールを再送信
-                # elif self.loop_count % 5 == 0:
-                #     self.send_goal()
+                elif self.loop_count % 5 == 0:
+                    self.send_goal()
                 
                 self.loop_count += 1
 
