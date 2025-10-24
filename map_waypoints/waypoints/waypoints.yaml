@@ -6,16 +6,18 @@ waypoints:
   angle_radians: -2.976
 - number: 2
   x: 0.8
-  y: -0.1
+  y: -0.15
   angle_radians: -1.471
 - number: 3
-  x: 1.05
-  y: -4.55
+  x: 1.15
+  y: -6.0
   angle_radians: -1.466
+  stop: true
 - number: 4
-  x: 1.45
-  y: -10.15
+  x: 1.6
+  y: -11.65
   angle_radians: -1.46
+  stop: false
 - number: 5
   x: 1.75
   y: -15.0

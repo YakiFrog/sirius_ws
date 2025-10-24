@@ -13,6 +13,7 @@ import argparse
 from dataclasses import dataclass
 from typing import List
 from math import sin, cos, pi
+from std_msgs.msg import Bool
 
 @dataclass
 class Waypoint:
@@ -21,11 +22,16 @@ class Waypoint:
     y: float
     angle_radians: float
     rotate: float = 0.0
+    stop: bool = False
     
 class Nav2GoalClient(Node):
     def __init__(self, count = 1):
         super().__init__('nav2_goal_client')
         self._action_client = ActionClient(self, NavigateToPose, 'navigate_to_pose')
+        
+        
+        # stopトピック用のパブリッシャーを追加
+        self.stop_publisher = self.create_publisher(Bool, '/stop', 10)
         
         while not self._action_client.wait_for_server(timeout_sec = 1.0):
             self.get_logger().info("Waiting for action server...")
@@ -49,7 +55,8 @@ class Nav2GoalClient(Node):
             x = wp['x'],
             y = wp['y'],
             angle_radians = wp['angle_radians'],
-            rotate = wp.get('rotate', 0.0) # キーが存在しない場合は0.0を返す
+            rotate = wp.get('rotate', 0.0),  # キーが存在しない場合は0.0を返す
+            stop = wp.get('stop', False)  # キーが存在しない場合はFalseを返す
         ) for wp in data['waypoints']]
         
     def euler_to_quaternion(self, yaw):
@@ -93,6 +100,15 @@ class Nav2GoalClient(Node):
             self.distance = float('inf')  # 新しいゴールが受理されたので距離をリセット
         else:
             self.get_logger().info("Goal rejected...")
+        
+    def publish_stop_command(self, should_stop: bool):
+        stop_msg = Bool()
+        stop_msg.data = should_stop
+        self.stop_publisher.publish(stop_msg)
+        if should_stop:
+            self.get_logger().info("Published stop command.")
+        else:
+            self.get_logger().info("Published resume command.")
             
     def get_position(self):
         try:
@@ -115,14 +131,28 @@ class Nav2GoalClient(Node):
                 y_distance = y_goal - self.position[1]
                 self.distance = math.sqrt(x_distance**2 + y_distance**2)
                 self.get_logger().info(f"Current distance to goal: {self.distance}")
-
-                if self.distance < 2.5:
+                
+                # stopコマンドによって判定距離を変更
+                if hasattr(current_wp, 'stop') and current_wp.stop:
+                    threshold_distance = 0.7  # stopがTrueの場合は0.7m
+                else:
+                    threshold_distance = 2.5  # stopがFalseまたは未設定の場合は2.5m
+                
+                if self.distance < threshold_distance:
                     self.get_logger().info("Goal reached! Sending next goal...")
+                    
+                    if hasattr(current_wp, 'stop') and current_wp.stop is not None: # stop属性が存在する場合
+                        if current_wp.stop:  # stopがTrueの場合
+                            self.publish_stop_command(True)  # 停止コマンドを送信
+                        else:
+                            self.publish_stop_command(False)  # 再開コマンドを送信
+                            
                     self.count += 1
                     self.send_goal()
                 
-                elif self.loop_count % 5 == 0:
-                    self.send_goal()
+                # 定期的にゴールを再送信
+                # elif self.loop_count % 5 == 0:
+                #     self.send_goal()
                 
                 self.loop_count += 1
 

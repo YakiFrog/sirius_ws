@@ -1,0 +1,7 @@
+version: '1.0'
+format:
+  number: int
+  x: float
+  y: float
+  angle_radians: float
+  stop: bool
