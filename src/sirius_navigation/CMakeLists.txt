@@ -57,6 +57,10 @@ install(PROGRAMS
   scripts/initial_pose.py
   DESTINATION lib/${PROJECT_NAME}
 )
+install(PROGRAMS
+  scripts/follow_waypoints.py
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 
 if(BUILD_TESTING)

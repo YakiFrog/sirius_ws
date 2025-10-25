@@ -136,7 +136,7 @@ class Nav2GoalClient(Node):
                 if hasattr(current_wp, 'stop') and current_wp.stop:
                     threshold_distance = 0.7  # stopがTrueの場合は0.7m
                 else:
-                    threshold_distance = 2.5  # stopがFalseまたは未設定の場合は2.5m
+                    threshold_distance = 1.5  # stopがFalseまたは未設定の場合は2.5m
                 
                 if self.distance < threshold_distance:
                     self.get_logger().info("Goal reached! Sending next goal...")
