@@ -47,7 +47,7 @@ amcl:
     robot_model_type: "nav2_amcl::DifferentialMotionModel"
     save_pose_rate: 0.5
 
-    sigma_hit: 0.25 # ヒットの標準偏差 default: 0.2 -> 0.1 (0615) -> 0.25(10/24) いいかわからん
+    sigma_hit: 0.15 # ヒットの標準偏差 default: 0.2 -> 0.1 (0615) -> 0.25(10/24) いいかわからん
     tf_broadcast: True
     transform_tolerance: 1.0 # 1.0
     update_min_a: 0.1 # パーティクルフィルタの更新の閾値 default: 0.2
@@ -257,21 +257,21 @@ controller_server:
       model_dt: 0.1 # 0.05→0.07,  1/20 = 0.05, 1/15 = 0.06666...  制御周期に合わせる 1/10 = 0.1
       batch_size: 2000  # 2000→1500 計算負荷を半減（制御ループ遅延対策）
 
-      ax_max: 0.8
+      ax_max: 0.6
       ax_min: -0.8 # 急ブレーキのために(無根拠)
       ay_max: 0.0
       ay_min: 0.0
-      az_max: 0.8 # axの1.5倍
+      az_max: 0.6 # axの1.5倍
 
       # これは速度の分散を決めるものであり，低くするとよくある速度が足りなくて動けなくなる
       vx_std: 0.35
       vy_std: 0.00
       wz_std: 0.60
 
-      vx_max: 1.0
+      vx_max: 0.8
       vx_min: -0.8 # 後退は控えめに
       vy_max: 0.0
-      wz_max: 1.3
+      wz_max: 1.0
 
       iteration_count: 1
       prune_distance: 3.5 # より遠くまで軌道を維持
@@ -390,8 +390,8 @@ velocity_smoother:
     # max_decel: [-2.5, 0.0, -3.2]
     max_velocity: [1.30, 0.0, 2.30]
     min_velocity: [-0.50, 0.0, -2.30]
-    max_accel: [3.0, 0.0, 2.80]
-    max_decel: [-3.0, 0.0, -2.80]
+    max_accel: [3.0, 0.0, 2.00]
+    max_decel: [-3.0, 0.0, -2.00]
     odom_topic: "odom"
     odom_duration: 0.1
     deadband_velocity: [0.0, 0.0, 0.0]
