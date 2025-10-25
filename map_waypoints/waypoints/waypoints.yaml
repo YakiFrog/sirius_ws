@@ -1,8 +1,8 @@
 format_version: '1.0'
 waypoints:
 - number: 1
-  x: 7.55
-  y: -2.55
+  x: 7.0
+  y: -0.95
   angle_radians: -2.976
 - number: 2
   x: 0.8
@@ -12,29 +12,35 @@ waypoints:
   x: 1.1
   y: -6.95
   angle_radians: -1.466
-  stop: false
 - number: 4
   x: 1.55
   y: -11.95
   angle_radians: -1.46
-  stop: false
 - number: 5
-  x: 1.75
-  y: -15.0
-  angle_radians: 1.626
+  x: 1.7
+  y: -15.1
+  angle_radians: -3.02
 - number: 6
-  x: 1.35
-  y: -10.05
-  angle_radians: 1.635
+  x: -3.05
+  y: -15.4
+  angle_radians: -2.971
 - number: 7
-  x: 1.0
-  y: -4.4
-  angle_radians: 1.656
-- number: 8
-  x: 0.75
-  y: -0.1
+  x: -6.05
+  y: -15.6
   angle_radians: 0.0
+- number: 8
+  x: 1.7
+  y: -15.05
+  angle_radians: 1.661
 - number: 9
-  x: 7.5
-  y: -2.45
-  angle_radians: -3.005
+  x: 1.05
+  y: -5.35
+  angle_radians: 1.654
+- number: 10
+  x: 0.75
+  y: -0.15
+  angle_radians: -0.083
+- number: 11
+  x: 6.95
+  y: -0.85
+  angle_radians: -3.042

@@ -29,21 +29,31 @@ amcl:
     # Beam Skipをオフにすることで，15Fの出口で自己位置推定が飛ぶ減少がなくなった（1025）
 
     lambda_short: 0.1
-    laser_likelihood_max_dist: 100.0 # レーザの尤度の最大距離[m] default: 2.0
+    laser_likelihood_max_dist: 5.0 # レーザの尤度の最大距離[m] default: 2.0 -> 5.0 100mもいらないみたい．最大でも５mにしとかないと計算負荷が高い
     laser_max_range: 100.0
     laser_min_range: -1.0
-    laser_model_type: "likelihood_field" # prob
+    laser_model_type: "beam" # レーザーモデルのタイプ ("beam" or "likelihood_field")
+    # "beam": 各レーザービームの測定値を個別に評価し、マップとの一致度を計算
+    # "likelihood_field": レーザービームの測定値をマップ全体の尤度場と比較して評価
+    # 周りに障害物が少ない環境では，Beamのほうがいい．
 
     # パーティクルフィルタのパラメータ
     max_beams: 180 # ビームの数 default: 60 -> 120 -> 180 高密度
     max_particles: 2500 # パーティクルの数 default: 2000 -> 3000
-    min_particles: 800 # パーティクルの最小数 default: 500 -> 400 -> 900 -> 600(1007)
+    min_particles: 600 # パーティクルの最小数 default: 500 -> 400 -> 900 -> 600(1007)
     pf_err: 0.10
     pf_z: 0.99
 
     odom_frame_id: "odom"
-    recovery_alpha_fast: 0.01 # 0.01より下げないほうがいい
-    recovery_alpha_slow: 0.02 # リカバリのα値 いれるなら，0.1以上じゃないと動かない -> 0.1
+    # 5%ぐらいにしたい．slow * 0.05 = fast, slow = fast / 0.05.
+    # recovery_alpha_fast: 0.01
+    # recovery_alpha_slow: 0.03 # 試しに，fast:0.01, slow:0.05にすると,15Fの出口で自己位置がジャンプした．そのため，slowを小さくした．これでジャンプしづらいけど，自己位置を修正する．
+    recovery_alpha_fast: 0.00 # これをオフにすればジャンプしない．パーティクル内で修正がきくようになる．
+    recovery_alpha_slow: 0.00
+    # 動作メカニズム
+    # センサー更新時に、これらのアルファ値を使って尤度の移動平均(w_slowとw_fast)が更新されます。 pf.c:270-281
+    # リサンプリング時には、w_diff = 1.0 - w_fast / w_slowが計算され、この値に基づいてランダムなポーズを追加する確率が決まります。
+
     resample_interval: 1 # リサンプリングの間隔 default: 1
     robot_model_type: "nav2_amcl::DifferentialMotionModel"
     save_pose_rate: 0.5
@@ -52,6 +62,7 @@ amcl:
     tf_broadcast: True
     transform_tolerance: 1.0 # 1.0
     update_min_a: 0.05 # パーティクルフィルタの更新の閾値 default: 0.2
+    # -> 0.05のほうがいい．0.10にしたときに収束が遅かった
     update_min_d: 0.05 # パーティクルフィルタの更新の閾値 default: 0.25
     z_hit: 0.70 # ヒットの確率 default: 0.5
     z_short: 0.15
@@ -142,7 +153,7 @@ local_costmap:
       height: 5
       resolution: 0.05
       # footprint: "[ [0.30, 0.30], [0.30, -0.30], [-0.50, -0.30], [-0.50, 0.30] ]" # ロボットの形状（ぴったりサイズ）
-      footprint: "[ [0.40, 0.35], [0.40, -0.35], [-0.60, -0.35], [-0.60, 0.35] ]" # ロボットの形状 (10cmマージン, 横は5cmマージン) これをでかくしすぎるとパスが引けなくなる
+      footprint: "[ [0.40, 0.30], [0.40, -0.30], [-0.60, -0.30], [-0.60, 0.30] ]" # ロボットの形状 (10cmマージン, 横は5cmマージン) これをでかくしすぎるとパスが引けなくなる
       plugins: ["stvl_layer", "obstacle_layer", "inflation_layer"]
       filters: ["keepout_filter"]
       track_unknown_space: true 
