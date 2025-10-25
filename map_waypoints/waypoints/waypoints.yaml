@@ -69,492 +69,482 @@ waypoints:
   y: 2.2
   angle_radians: -0.009
 - number: 18
-  x: 56.25
-  y: 2.3
+  x: 56.9
+  y: 2.55
   angle_radians: -0.024
 - number: 19
-  x: 59.45
-  y: 2.35
+  x: 61.0
+  y: 2.65
   angle_radians: -0.106
 - number: 20
-  x: 62.75
-  y: 2.45
-  angle_radians: -0.061
-- number: 21
-  x: 65.6
-  y: 2.35
+  x: 64.95
+  y: 2.5
   angle_radians: -0.046
-  stop: true
-- number: 22
+- number: 21
   x: 76.0
   y: 2.95
   angle_radians: -0.069
-  stop: false
-- number: 23
+- number: 22
   x: 79.05
   y: 3.0
   angle_radians: -0.065
-- number: 24
-  x: 82.15
-  y: 3.0
+- number: 23
+  x: 82.35
+  y: 3.2
   angle_radians: -0.018
-- number: 25
+- number: 24
   x: 85.45
   y: 3.1
   angle_radians: -0.056
-- number: 26
-  x: 88.5
-  y: 2.45
+- number: 25
+  x: 88.7
+  y: 2.85
   angle_radians: -0.251
-- number: 27
-  x: 91.45
-  y: 1.4
+- number: 26
+  x: 91.85
+  y: 1.9
   angle_radians: -0.516
-- number: 28
-  x: 94.3
-  y: -0.4
+- number: 27
+  x: 94.45
+  y: -0.05
   angle_radians: -0.588
-- number: 29
+- number: 28
   x: 97.05
   y: -1.9
   angle_radians: -0.442
-- number: 30
+- number: 29
   x: 100.4
   y: -2.45
   angle_radians: -0.043
-- number: 31
+- number: 30
   x: 103.55
   y: -2.4
   angle_radians: -0.017
-- number: 32
+- number: 31
   x: 106.65
   y: -2.3
   angle_radians: -0.073
-- number: 33
+- number: 32
   x: 109.8
   y: -2.3
   angle_radians: -0.032
-- number: 34
+- number: 33
   x: 113.0
   y: -2.4
   angle_radians: -0.066
-- number: 35
+- number: 34
   x: 116.0
   y: -2.3
   angle_radians: -0.05
-- number: 36
+- number: 35
   x: 119.5
   y: -2.3
   angle_radians: -0.013
-- number: 37
+- number: 36
   x: 122.55
   y: -2.2
   angle_radians: 0.003
-- number: 38
+- number: 37
   x: 126.0
   y: -2.15
   angle_radians: -0.105
-- number: 39
+- number: 38
   x: 129.1
   y: -2.2
   angle_radians: -0.039
-- number: 40
+- number: 39
   x: 132.5
   y: -2.2
   angle_radians: -0.054
-- number: 41
+- number: 40
   x: 135.55
   y: -2.15
   angle_radians: -0.044
-- number: 42
+- number: 41
   x: 138.7
   y: -2.0
   angle_radians: -0.154
-- number: 43
-  x: 141.8
-  y: -2.0
+- number: 42
+  x: 142.3
+  y: -1.85
   angle_radians: -0.034
-- number: 44
-  x: 145.0
-  y: -2.3
+- number: 43
+  x: 146.05
+  y: -1.9
   angle_radians: -0.411
-- number: 45
-  x: 146.3
-  y: -5.5
+- number: 44
+  x: 147.15
+  y: -4.7
   angle_radians: -1.495
-- number: 46
-  x: 146.8
-  y: -8.6
+- number: 45
+  x: 147.1
+  y: -8.5
   angle_radians: -1.552
-- number: 47
+- number: 46
   x: 147.1
   y: -11.75
   angle_radians: -1.539
-- number: 48
+- number: 47
   x: 147.45
   y: -14.8
   angle_radians: -1.473
-- number: 49
+- number: 48
   x: 147.5
   y: -17.9
   angle_radians: -1.642
-- number: 50
+- number: 49
   x: 147.5
   y: -21.25
   angle_radians: -1.648
-- number: 51
+- number: 50
   x: 147.35
   y: -24.6
   angle_radians: -1.671
-- number: 52
+- number: 51
   x: 147.35
   y: -27.8
   angle_radians: -1.647
-- number: 53
+- number: 52
   x: 147.5
   y: -31.05
   angle_radians: -1.621
-- number: 54
+- number: 53
   x: 147.35
   y: -34.25
   angle_radians: -1.631
-- number: 55
+- number: 54
   x: 147.7
   y: -37.55
   angle_radians: -1.625
-- number: 56
+- number: 55
   x: 147.75
   y: -40.6
   angle_radians: -1.602
-- number: 57
+- number: 56
   x: 147.8
   y: -43.85
   angle_radians: -1.834
-- number: 58
+- number: 57
   x: 147.3
   y: -46.85
   angle_radians: -1.734
-- number: 59
+- number: 58
   x: 147.35
   y: -50.15
   angle_radians: -1.648
-- number: 60
+- number: 59
   x: 147.4
   y: -53.25
   angle_radians: -1.64
-- number: 61
+- number: 60
   x: 146.95
   y: -56.55
   angle_radians: -1.946
-- number: 62
+- number: 61
   x: 146.35
   y: -59.85
   angle_radians: -1.744
-- number: 63
+- number: 62
   x: 146.15
   y: -63.3
   angle_radians: -1.616
-- number: 64
+- number: 63
   x: 146.15
   y: -66.7
   angle_radians: -1.622
-- number: 65
+- number: 64
   x: 145.9
   y: -69.85
   angle_radians: -1.708
-- number: 66
+- number: 65
   x: 145.8
   y: -72.95
   angle_radians: -1.832
-- number: 67
+- number: 66
   x: 145.85
   y: -76.25
   angle_radians: -1.62
-- number: 68
+- number: 67
   x: 145.8
   y: -79.55
   angle_radians: -1.677
-- number: 69
+- number: 68
   x: 145.8
   y: -82.6
   angle_radians: -1.614
-- number: 70
+- number: 69
   x: 145.9
   y: -85.6
   angle_radians: -1.753
-- number: 71
+- number: 70
   x: 145.65
   y: -88.7
   angle_radians: -1.7
-- number: 72
+- number: 71
   x: 145.4
   y: -91.85
   angle_radians: -1.783
-- number: 73
+- number: 72
   x: 142.75
   y: -93.35
   angle_radians: -2.777
-- number: 74
+- number: 73
   x: 139.75
   y: -93.25
   angle_radians: 2.814
-- number: 75
+- number: 74
   x: 136.8
   y: -92.5
   angle_radians: 2.88
-- number: 76
+- number: 75
   x: 133.85
   y: -91.95
   angle_radians: 2.843
-- number: 77
+- number: 76
   x: 130.9
   y: -91.3
   angle_radians: 2.807
-- number: 78
+- number: 77
   x: 127.5
   y: -90.65
   angle_radians: 2.988
-- number: 79
+- number: 78
   x: 124.2
   y: -90.25
   angle_radians: 2.916
-- number: 80
+- number: 79
   x: 121.05
   y: -89.7
   angle_radians: 2.935
-- number: 81
+- number: 80
   x: 117.9
   y: -88.9
   angle_radians: 2.948
-- number: 82
+- number: 81
   x: 114.6
   y: -88.4
   angle_radians: 2.825
-- number: 83
+- number: 82
   x: 111.55
   y: -87.65
   angle_radians: 3.009
-- number: 84
+- number: 83
   x: 108.35
   y: -86.9
   angle_radians: 2.925
-- number: 85
+- number: 84
   x: 105.1
   y: -86.45
   angle_radians: 2.861
-- number: 86
+- number: 85
   x: 101.75
   y: -85.85
   angle_radians: 2.903
-- number: 87
+- number: 86
   x: 98.6
   y: -85.15
   angle_radians: 2.845
-- number: 88
+- number: 87
   x: 95.35
   y: -84.25
   angle_radians: 2.881
-- number: 89
+- number: 88
   x: 92.35
-  y: -83.35
+  y: -83.45
   angle_radians: 2.892
-  stop: true
-- number: 90
-  x: 79.85
-  y: -80.75
+- number: 89
+  x: 79.9
+  y: -80.6
   angle_radians: 2.769
-  stop: false
-- number: 91
+- number: 90
   x: 76.85
   y: -79.8
   angle_radians: 2.809
-- number: 92
+- number: 91
   x: 73.8
   y: -79.0
   angle_radians: 2.876
-- number: 93
+- number: 92
   x: 70.7
   y: -78.35
   angle_radians: 2.781
-- number: 94
+- number: 93
   x: 67.75
   y: -77.7
   angle_radians: 2.862
-- number: 95
+- number: 94
   x: 64.8
   y: -76.95
   angle_radians: 2.887
-- number: 96
+- number: 95
   x: 61.8
   y: -76.1
   angle_radians: 2.883
-- number: 97
+- number: 96
   x: 58.9
   y: -75.35
   angle_radians: 2.723
-- number: 98
+- number: 97
   x: 55.6
   y: -74.55
   angle_radians: 2.77
-- number: 99
+- number: 98
   x: 52.4
   y: -73.75
   angle_radians: 2.856
-- number: 100
+- number: 99
   x: 49.0
   y: -73.05
   angle_radians: 2.808
-- number: 101
+- number: 100
   x: 46.05
   y: -72.3
   angle_radians: 2.932
-- number: 102
+- number: 101
   x: 43.0
   y: -71.5
   angle_radians: 2.867
-- number: 103
+- number: 102
   x: 39.8
   y: -70.55
   angle_radians: 2.806
-- number: 104
+- number: 103
   x: 36.65
   y: -70.05
   angle_radians: 2.863
-- number: 105
+- number: 104
   x: 33.4
   y: -68.95
   angle_radians: 2.763
-- number: 106
+- number: 105
   x: 30.35
   y: -68.3
   angle_radians: 2.957
-- number: 107
+- number: 106
   x: 26.95
   y: -67.6
   angle_radians: 2.752
-- number: 108
+- number: 107
   x: 23.75
   y: -66.7
   angle_radians: 2.806
-- number: 109
+- number: 108
   x: 20.65
   y: -65.6
   angle_radians: 2.675
-- number: 110
+- number: 109
   x: 17.6
   y: -64.5
   angle_radians: 2.722
-- number: 111
+- number: 110
   x: 14.5
   y: -63.5
   angle_radians: 2.65
-- number: 112
+- number: 111
   x: 11.75
   y: -61.8
   angle_radians: 2.631
-- number: 113
+- number: 112
   x: 8.95
   y: -60.45
   angle_radians: 2.778
-- number: 114
+- number: 113
   x: 5.95
   y: -59.3
   angle_radians: 2.705
-- number: 115
-  x: 2.9
-  y: -58.0
+- number: 114
+  x: 2.95
+  y: -58.25
   angle_radians: 2.566
-- number: 116
-  x: 0.25
-  y: -56.35
+- number: 115
+  x: 0.15
+  y: -56.85
   angle_radians: 2.416
-- number: 117
-  x: -2.05
-  y: -54.3
+- number: 116
+  x: -2.65
+  y: -55.15
   angle_radians: 2.38
-- number: 118
-  x: -4.7
-  y: -52.15
+- number: 117
+  x: -5.45
+  y: -52.4
   angle_radians: 2.356
-- number: 119
-  x: -7.05
+- number: 118
+  x: -8.05
   y: -49.05
   angle_radians: 2.083
-- number: 120
-  x: -8.6
-  y: -46.35
+- number: 119
+  x: -9.8
+  y: -45.85
   angle_radians: 1.958
-- number: 121
-  x: -10.15
-  y: -43.15
+- number: 120
+  x: -10.6
+  y: -42.9
   angle_radians: 2.009
-- number: 122
+- number: 121
   x: -11.1
   y: -39.95
   angle_radians: 1.73
-- number: 123
+- number: 122
   x: -11.15
   y: -36.65
   angle_radians: 1.441
-- number: 124
+- number: 123
   x: -11.05
   y: -33.65
   angle_radians: 1.244
-- number: 125
+- number: 124
   x: -10.5
   y: -30.05
   angle_radians: 1.376
-- number: 126
+- number: 125
   x: -9.7
   y: -27.15
   angle_radians: 1.165
-- number: 127
+- number: 126
   x: -8.45
   y: -24.2
   angle_radians: 1.061
-- number: 128
+- number: 127
   x: -7.3
   y: -21.4
   angle_radians: 1.686
-  stop: true
-- number: 129
-  x: -12.75
-  y: -17.6
+- number: 128
+  x: -12.85
+  y: -18.15
   angle_radians: -2.669
-  stop: false
-- number: 130
+- number: 129
   x: -14.45
   y: -20.9
   angle_radians: -1.981
-- number: 131
+- number: 130
   x: -15.65
   y: -23.8
   angle_radians: -2.127
-- number: 132
+- number: 131
   x: -18.75
   y: -24.75
   angle_radians: 2.782
-- number: 133
+- number: 132
   x: -21.9
   y: -23.75
   angle_radians: 2.768
-- number: 134
+- number: 133
   x: -25.55
   y: -22.7
   angle_radians: 2.82
-- number: 135
+- number: 134
   x: -28.4
   y: -21.75
   angle_radians: 2.735
-- number: 136
+- number: 135
   x: -32.1
   y: -20.35
   angle_radians: 2.689
-- number: 137
+- number: 136
   x: -34.35
   y: -19.6
   angle_radians: 2.778
-- number: 138
+- number: 137
   x: -38.05
   y: -18.25
   angle_radians: 2.754

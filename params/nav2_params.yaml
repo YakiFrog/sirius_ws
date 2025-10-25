@@ -35,8 +35,8 @@ amcl:
 
     # パーティクルフィルタのパラメータ
     max_beams: 180 # ビームの数 default: 60 -> 120 -> 180 高密度
-    max_particles: 3000 # パーティクルの数 default: 2000 -> 3000
-    min_particles: 900 # パーティクルの最小数 default: 500 -> 400 -> 900 -> 600(1007)
+    max_particles: 2500 # パーティクルの数 default: 2000 -> 3000
+    min_particles: 800 # パーティクルの最小数 default: 500 -> 400 -> 900 -> 600(1007)
     pf_err: 0.10
     pf_z: 0.99
 
@@ -47,11 +47,11 @@ amcl:
     robot_model_type: "nav2_amcl::DifferentialMotionModel"
     save_pose_rate: 0.5
 
-    sigma_hit: 0.15 # ヒットの標準偏差 default: 0.2 -> 0.1 (0615) -> 0.25(10/24) いいかわからん
+    sigma_hit: 0.25 # ヒットの標準偏差 default: 0.2 -> 0.1 (0615) -> 0.25(10/24) いいかわからん
     tf_broadcast: True
     transform_tolerance: 1.0 # 1.0
-    update_min_a: 0.1 # パーティクルフィルタの更新の閾値 default: 0.2
-    update_min_d: 0.1 # パーティクルフィルタの更新の閾値 default: 0.25
+    update_min_a: 0.05 # パーティクルフィルタの更新の閾値 default: 0.2
+    update_min_d: 0.05 # パーティクルフィルタの更新の閾値 default: 0.25
     z_hit: 0.70 # ヒットの確率 default: 0.5
     z_short: 0.15
     z_max: 0.05
