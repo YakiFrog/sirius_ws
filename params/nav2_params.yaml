@@ -28,7 +28,7 @@ amcl:
     do_beamskip: True # ビームスキップを行うかどうか default: False
 
     lambda_short: 0.1
-    laser_likelihood_max_dist: 10.0 # レーザの尤度の最大距離[m] default: 2.0
+    laser_likelihood_max_dist: 100.0 # レーザの尤度の最大距離[m] default: 2.0
     laser_max_range: 100.0
     laser_min_range: -1.0
     laser_model_type: "likelihood_field" # prob
@@ -71,6 +71,7 @@ global_costmap:
       resolution: 0.05 # 0.05 -> 0.10 (軽量化のため)
       track_unknown_space: true
       plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
+      filters: ["keepout_filter"]
       obstacle_layer:
         plugin: "nav2_costmap_2d::ObstacleLayer"
         enabled: True
@@ -94,6 +95,10 @@ global_costmap:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 3.0 # ここをゆるくしておかないと、頑張れば通れそうなところで立ち往生しちゃう。
         inflation_radius: 0.75 # こうしないと、青色に車体が入って動かなくなる
+      keepout_filter:
+        plugin: "nav2_costmap_2d::KeepoutFilter"
+        enabled: True
+        filter_info_topic: "/costmap_filter_info"
       always_send_full_costmap: True
 
 # グローバルパス生成
@@ -138,6 +143,7 @@ local_costmap:
       # footprint: "[ [0.30, 0.30], [0.30, -0.30], [-0.50, -0.30], [-0.50, 0.30] ]" # ロボットの形状（ぴったりサイズ）
       footprint: "[ [0.40, 0.35], [0.40, -0.35], [-0.60, -0.35], [-0.60, 0.35] ]" # ロボットの形状 (10cmマージン, 横は5cmマージン) これをでかくしすぎるとパスが引けなくなる
       plugins: ["stvl_layer", "obstacle_layer", "inflation_layer"]
+      filters: ["keepout_filter"]
       track_unknown_space: true 
       static_layer:
         plugin: "nav2_costmap_2d::StaticLayer"
@@ -207,6 +213,10 @@ local_costmap:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 10.0 # コストの減少率(小さいほど急激に減少。ロボットが近づけない距離が広がる) ゆるくしておかないと，頑張れば通れそうなところで立ち往生しちゃう。
         inflation_radius: 0.75 # ロボットが近づけない距離
+      keepout_filter:
+        plugin: "nav2_costmap_2d::KeepoutFilter"
+        enabled: True
+        filter_info_topic: "/costmap_filter_info"
       always_send_full_costmap: True
 
 # ローカルパス生成・追従
@@ -251,7 +261,7 @@ controller_server:
       ax_min: -0.8 # 急ブレーキのために(無根拠)
       ay_max: 0.0
       ay_min: 0.0
-      az_max: 1.0 # axの1.5倍
+      az_max: 0.8 # axの1.5倍
 
       # これは速度の分散を決めるものであり，低くするとよくある速度が足りなくて動けなくなる
       vx_std: 0.35
