@@ -4,4 +4,4 @@ format:
   x: float
   y: float
   angle_radians: float
-  stop: bool
+  stop: string

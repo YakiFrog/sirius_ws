@@ -1,0 +1,21 @@
+costmap_filter_info_server:
+  ros__parameters:
+    use_sim_time: true
+    type: 0
+    filter_info_topic: "/costmap_filter_info"
+    mask_topic: "/keepout_filter_mask"
+    base: 0.0
+    multiplier: 1.0
+filter_mask_server:
+  ros__parameters:
+    use_sim_time: true
+    frame_id: "map"
+    topic_name: "/keepout_filter_mask"
+    yaml_filename: "keepout_mask.yaml"
+
+# 起動コマンド(例)
+# git clone https://github.com/ros-navigation/navigation2_tutorials/tree/jazzy
+# ros2 launch nav2_costmap_filters_demo costmap_filter_info.launch.py \
+# params_file:=/home/sirius24/sirius_ws/params/keepout_params.yaml \
+# mask:=/home/sirius24/sirius_ws/maps_waypoints/keepout_mask/keepout_mask.yaml \
+# use_composition:=False
