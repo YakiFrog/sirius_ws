@@ -262,8 +262,8 @@ controller_server:
     general_goal_checker:
       stateful: True
       plugin: "nav2_controller::SimpleGoalChecker"
-      xy_goal_tolerance: 0.50
-      yaw_goal_tolerance: 0.50
+      xy_goal_tolerance: 1.5
+      yaw_goal_tolerance: 1.0
     FollowPath:
       plugin: "nav2_mppi_controller::MPPIController"
       time_steps: 60  # 80 -> 60
@@ -536,4 +536,4 @@ waypoint_follower:
     wait_at_waypoint:
       plugin: "nav2_waypoint_follower::WaitAtWaypoint"
       enabled: false
-      waypoint_pause_duration: 100 # ウェイポイント到達後の待機時間[ms] default: 200
+      waypoint_pause_duration: 0 # ウェイポイント到達後の待機時間[ms] default: 200

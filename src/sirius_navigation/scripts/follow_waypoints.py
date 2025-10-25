@@ -52,12 +52,15 @@ class FollowWaypointsClient(Node):
         # 現在位置
         self.current_position = None
         
+        # ログ出力制御用カウンタ
+        self.position_check_count = 0
+        
         # アクションサーバーの待機
         while not self._action_client.wait_for_server(timeout_sec=1.0):
             self.get_logger().info("Waiting for FollowWaypoints action server...")
         
-        # 位置取得タイマー
-        self.timer = self.create_timer(0.5, self.get_position)
+        # 位置取得タイマー（2秒周期に変更 - move_goal.pyと同じ）
+        self.timer = self.create_timer(2.0, self.get_position)
         
     def load_waypoints(self, file_path: str) -> List[Waypoint]:
         """YAMLファイルからウェイポイントをロード"""
@@ -133,7 +136,25 @@ class FollowWaypointsClient(Node):
     def feedback_callback(self, feedback_msg):
         """フィードバックコールバック - 現在のウェイポイントインデックスを取得"""
         feedback = feedback_msg.feedback
-        self.current_waypoint_index = feedback.current_waypoint
+        new_waypoint_index = feedback.current_waypoint
+        
+        # ウェイポイントが変わったことを検知（次のウェイポイントへ進んだ）
+        if self.current_waypoint_index is not None and new_waypoint_index != self.current_waypoint_index:
+            # 前のウェイポイントに到達したので、その stop 属性をチェック
+            previous_actual_index = self.start_count + self.current_waypoint_index
+            if previous_actual_index < len(self.waypoints):
+                previous_wp = self.waypoints[previous_actual_index]
+                self.get_logger().info(f"✅ Reached waypoint {previous_wp.number}! Checking stop command...")
+                
+                # stop 属性に基づいて停止/再開コマンドを送信
+                if hasattr(previous_wp, 'stop'):
+                    if previous_wp.stop:
+                        self.publish_stop_command(True)  # 停止コマンド
+                    else:
+                        self.publish_stop_command(False)  # 再開コマンド
+        
+        # 現在のインデックスを更新
+        self.current_waypoint_index = new_waypoint_index
         
         # 実際のウェイポイント番号に変換（start_countを考慮）
         actual_waypoint_index = self.start_count + self.current_waypoint_index
@@ -141,7 +162,7 @@ class FollowWaypointsClient(Node):
         if actual_waypoint_index < len(self.waypoints):
             wp = self.waypoints[actual_waypoint_index]
             self.get_logger().info(
-                f"Currently navigating to waypoint {wp.number} "
+                f"🎯 Currently navigating to waypoint {wp.number} "
                 f"(index: {actual_waypoint_index}, relative: {self.current_waypoint_index})"
             )
     
@@ -169,6 +190,9 @@ class FollowWaypointsClient(Node):
             translation = transform.transform.translation
             self.current_position = [translation.x, translation.y]
             
+            # カウンタを増やす
+            self.position_check_count += 1
+            
             # 現在のウェイポイントインデックスがある場合
             if self.current_waypoint_index is not None:
                 # 実際のウェイポイントインデックスに変換
@@ -184,8 +208,9 @@ class FollowWaypointsClient(Node):
                     distance = math.sqrt(x_distance**2 + y_distance**2)
                     
                     # stopコマンドによって判定距離を変更
+                    # Nav2のgoal_checker (1.0m) より広めにして先に判定
                     if hasattr(current_wp, 'stop') and current_wp.stop:
-                        threshold_distance = 0.7  # stopがTrueの場合は0.7m
+                        threshold_distance = 1.2  # stopがTrueの場合は1.2m（Nav2より広く）
                     else:
                         threshold_distance = 1.5  # stopがFalseまたは未設定の場合は1.5m
                     
@@ -194,22 +219,28 @@ class FollowWaypointsClient(Node):
                         # 新しいウェイポイントに到達した場合のみ処理
                         if actual_waypoint_index != self.previous_waypoint_index:
                             self.get_logger().info(
-                                f"Reached waypoint {current_wp.number}! Distance: {distance:.2f}m"
+                                f"📍 TF-based: Reached waypoint {current_wp.number}! Distance: {distance:.2f}m (threshold: {threshold_distance}m)"
                             )
                             
                             # stop属性に基づいて停止/再開コマンドを送信
-                            if hasattr(current_wp, 'stop') and current_wp.stop is not None:
+                            if hasattr(current_wp, 'stop'):
                                 if current_wp.stop:
+                                    self.get_logger().info(f"🛑 Waypoint {current_wp.number} has stop=True")
                                     self.publish_stop_command(True)  # 停止コマンド
                                 else:
+                                    self.get_logger().info(f"▶️ Waypoint {current_wp.number} has stop=False")
                                     self.publish_stop_command(False)  # 再開コマンド
+                            else:
+                                self.get_logger().info(f"ℹ️ Waypoint {current_wp.number} has no stop attribute")
                             
                             # 前回のインデックスを更新
                             self.previous_waypoint_index = actual_waypoint_index
                     else:
-                        # 距離をログ出力（オプション）
-                        # self.get_logger().info(f"Distance to waypoint {current_wp.number}: {distance:.2f}m")
-                        pass
+                        # 距離をログ出力（10秒に1回 = 5回に1回）
+                        if self.position_check_count % 5 == 0:
+                            self.get_logger().info(
+                                f"📏 Distance to waypoint {current_wp.number}: {distance:.2f}m / {threshold_distance}m"
+                            )
                         
         except LookupException:
             self.get_logger().warn("Transform lookup failed. Retrying...")
