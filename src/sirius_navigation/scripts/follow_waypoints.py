@@ -152,19 +152,26 @@ class FollowWaypointsClient(Node):
                         self.publish_stop_command(True)  # 停止コマンド
                     else:
                         self.publish_stop_command(False)  # 再開コマンド
-        
-        # 現在のインデックスを更新
-        self.current_waypoint_index = new_waypoint_index
-        
-        # 実際のウェイポイント番号に変換（start_countを考慮）
-        actual_waypoint_index = self.start_count + self.current_waypoint_index
-        
-        if actual_waypoint_index < len(self.waypoints):
-            wp = self.waypoints[actual_waypoint_index]
-            self.get_logger().info(
-                f"🎯 Currently navigating to waypoint {wp.number} "
-                f"(index: {actual_waypoint_index}, relative: {self.current_waypoint_index})"
-            )
+            
+            # 現在のインデックスを更新
+            self.current_waypoint_index = new_waypoint_index
+            
+            # 新しいウェイポイントへの移動開始を表示（変更時のみ）
+            actual_waypoint_index = self.start_count + self.current_waypoint_index
+            if actual_waypoint_index < len(self.waypoints):
+                wp = self.waypoints[actual_waypoint_index]
+                self.get_logger().info(
+                    f"🎯 Now navigating to waypoint {wp.number}"
+                )
+        elif self.current_waypoint_index is None:
+            # 初回のみ表示
+            self.current_waypoint_index = new_waypoint_index
+            actual_waypoint_index = self.start_count + self.current_waypoint_index
+            if actual_waypoint_index < len(self.waypoints):
+                wp = self.waypoints[actual_waypoint_index]
+                self.get_logger().info(
+                    f"🎯 Starting navigation to waypoint {wp.number}"
+                )
     
     def result_callback(self, future):
         """結果受信時のコールバック"""
