@@ -80,10 +80,12 @@ waypoints:
   x: 64.95
   y: 2.5
   angle_radians: -0.046
+  stop: true
 - number: 21
   x: 76.0
   y: 2.95
   angle_radians: -0.069
+  stop: false
 - number: 22
   x: 79.05
   y: 3.0
@@ -352,10 +354,12 @@ waypoints:
   x: 92.35
   y: -83.45
   angle_radians: 2.892
+  stop: true
 - number: 89
   x: 79.9
   y: -80.6
   angle_radians: 2.769
+  stop: false
 - number: 90
   x: 76.85
   y: -79.8
@@ -508,10 +512,12 @@ waypoints:
   x: -7.3
   y: -21.4
   angle_radians: 1.686
+  stop: true
 - number: 128
   x: -12.85
   y: -18.15
   angle_radians: -2.669
+  stop: false
 - number: 129
   x: -14.45
   y: -20.9
