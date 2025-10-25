@@ -12,7 +12,7 @@ waypoints:
   x: 1.1
   y: -6.95
   angle_radians: -1.466
-  stop: true
+  stop: false
 - number: 4
   x: 1.55
   y: -11.95
