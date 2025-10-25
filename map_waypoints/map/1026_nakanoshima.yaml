@@ -1,0 +1,7 @@
+free_thresh: 0.25
+image: 1026_nakanoshima.pgm
+mode: trinary
+negate: 0
+occupied_thresh: 0.65
+origin: [-127.0, -177.0, 0]
+resolution: 0.05
