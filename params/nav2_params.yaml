@@ -402,10 +402,10 @@ velocity_smoother:
     # min_velocity: [-1.0, 0.0, -2.0]
     # max_accel: [2.5, 0.0, 3.2]
     # max_decel: [-2.5, 0.0, -3.2]
-    max_velocity: [1.30, 0.0, 2.30]
-    min_velocity: [-0.50, 0.0, -2.30]
-    max_accel: [3.0, 0.0, 2.00]
-    max_decel: [-3.0, 0.0, -2.00]
+    max_velocity: [1.0, 0.0, 2.0]
+    min_velocity: [-0.50, 0.0, -2.0]
+    max_accel: [0.80, 0.0, 0.80] # 加速度を減らすことで急停止を防止した．なめらかになったが完璧ではない．だが，バッテリーが停止するのは避けれそう．
+    max_decel: [-0.80, 0.0, -0.80]
     odom_topic: "odom"
     odom_duration: 0.1
     deadband_velocity: [0.0, 0.0, 0.0]
@@ -524,13 +524,13 @@ behavior_server:
     use_sim_time: False
     simulate_ahead_time: 3.0 # どんくらい先まで予測するか[s] default: 2.0
     max_rotational_vel: 0.40
-    min_rotational_vel: 0.05
+    min_rotational_vel: 0.20
     rotational_acc_lim: 0.15
 
 robot_state_publisher:
   ros__parameters:
     use_sim_time: False
-    publish_frequency: 30.0
+    publish_frequency: 20.0
 
 waypoint_follower:
   ros__parameters:
