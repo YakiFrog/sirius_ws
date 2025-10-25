@@ -41,7 +41,7 @@ amcl:
     max_beams: 120 # ビームの数 default: 60 -> 120. どのくらいでサンプリングするか．MAX１２０のほうがいい．
     max_particles: 2500 # パーティクルの数 default: 2000 -> 3000
     min_particles: 600 # パーティクルの最小数 default: 500 -> 400 -> 900 -> 600(1007)
-    pf_err: 0.10
+    pf_err: 0.05 # パーティクルフィルタの誤差閾値 default: 0.05, 低くするほど必要なパーティクル数が増加する
     pf_z: 0.99
 
     odom_frame_id: "odom"
@@ -58,12 +58,11 @@ amcl:
     robot_model_type: "nav2_amcl::DifferentialMotionModel"
     save_pose_rate: 0.5
 
-    sigma_hit: 0.25 # ヒットの標準偏差 default: 0.2 -> 0.1 (0615) -> 0.25(10/24) いいかわからん
+    sigma_hit: 0.20 # ヒットの標準偏差 default: 0.2
     tf_broadcast: True
     transform_tolerance: 1.0 # 1.0
-    update_min_a: 0.05 # パーティクルフィルタの更新の閾値 default: 0.2
-    # -> 0.05のほうがいい．0.10にしたときに収束が遅かった
-    update_min_d: 0.05 # パーティクルフィルタの更新の閾値 default: 0.25
+    update_min_a: 0.10 # パーティクルフィルタの更新の閾値 default: 0.2
+    update_min_d: 0.10 # パーティクルフィルタの更新の閾値 default: 0.25
 
     # レーザーモデルのパラメータ(beam modelの場合)
     z_hit: 0.70 # ヒットの確率 default: 0.5
