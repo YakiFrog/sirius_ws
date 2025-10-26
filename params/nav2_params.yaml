@@ -4,8 +4,8 @@ amcl:
     use_sim_time: False
 
     # ロボットの動作モデルのパラメータ
-    alpha1: 0.10 # ロールのノイズの標準偏差（回転によるノイズを減らす）
-    alpha2: 0.10 # ピッチのノイズの標準偏差（並進によるノイズを減らす）
+    alpha1: 0.15 # ロールのノイズの標準偏差（回転によるノイズを減らす）
+    alpha2: 0.15 # ピッチのノイズの標準偏差（並進によるノイズを減らす）
     alpha3: 0.15 # ヨーのノイズの標準偏差（並進による回転ノイズを少し増やす）
     alpha4: 0.15 # 進行方向のノイズの標準偏差（回転による並進ノイズを減らす）
     alpha5: 0.00 # 進行方向のノイズの標準偏差（オムニ用)
@@ -32,14 +32,15 @@ amcl:
     laser_likelihood_max_dist: 5.0 # レーザの尤度の最大距離[m] default: 2.0 -> 5.0 100mもいらないみたい．最大でも５mにしとかないと計算負荷が高い
     laser_max_range: 100.0
     laser_min_range: -1.0
-    laser_model_type: "likelihood_field" # レーザーモデルのタイプ ("beam" or "likelihood_field")
+    laser_model_type: "beam" # レーザーモデルのタイプ ("beam" or "likelihood_field")
+    # laser_model_type: "likelihood_field" # レーザーモデルのタイプ ("beam" or "likelihood_field")
     # "beam": 各レーザービームの測定値を個別に評価し、マップとの一致度を計算
     # "likelihood_field": レーザービームの測定値をマップ全体の尤度場と比較して評価
     # 周りに障害物が少ない環境では，Beamのほうがいい．
 
     # パーティクルフィルタのパラメータ
     max_beams: 120 # ビームの数 default: 60 -> 120. どのくらいでサンプリングするか．MAX１２０のほうがいい．
-    max_particles: 2500 # パーティクルの数 default: 2000 -> 3000
+    max_particles: 3000 # パーティクルの数 default: 2000 -> 3000
     min_particles: 600 # パーティクルの最小数 default: 500 -> 400 -> 900 -> 600(1007)
     pf_err: 0.05 # パーティクルフィルタの誤差閾値 default: 0.05, 低くするほど必要なパーティクル数が増加する
     pf_z: 0.99
@@ -262,7 +263,7 @@ controller_server:
     general_goal_checker:
       stateful: True
       plugin: "nav2_controller::SimpleGoalChecker"
-      xy_goal_tolerance: 1.5
+      xy_goal_tolerance: 1.0
       yaw_goal_tolerance: 1.0
     FollowPath:
       plugin: "nav2_mppi_controller::MPPIController"
@@ -281,8 +282,8 @@ controller_server:
       vy_std: 0.00
       wz_std: 0.60
 
-      vx_max: 0.8
-      vx_min: -0.8 # 後退は控えめに
+      vx_max: 1.0
+      vx_min: -0.80 # 後退は控えめに
       vy_max: 0.0
       wz_max: 1.0
 
@@ -398,7 +399,7 @@ velocity_smoother:
     scale_velocities: False
     feedback: "OPEN_LOOP"
     max_velocity: [1.0, 0.0, 2.0]
-    min_velocity: [-0.50, 0.0, -2.0]
+    min_velocity: [-0.80, 0.0, -2.0]
     max_accel: [0.80, 0.0, 0.80] # 加速度を減らすことで急停止を防止した．なめらかになったが完璧ではない．だが，バッテリーが停止するのは避けれそう．
     max_decel: [-0.80, 0.0, -0.80]
     odom_topic: "odom"
