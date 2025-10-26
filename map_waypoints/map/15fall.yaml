@@ -1,5 +1,5 @@
 free_thresh: 0.25
-image: 15F_all.pgm
+image: 15fall.pgm
 mode: trinary
 negate: 0
 occupied_thresh: 0.65
