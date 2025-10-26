@@ -2,3 +2,10 @@ build/
 install/
 log/
 src/witmotion_IMU_ros
+
+# Large map files
+map.posegraph
+map.data
+*.posegraph
+*.gv
+*.pdf
