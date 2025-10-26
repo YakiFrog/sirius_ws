@@ -25,7 +25,7 @@ amcl:
     beam_skip_distance: 0.2 # ビームスキップの距離[m] レーザービームの測定点が障害物にどれだけ近い場合に「マップと一致している」と判定するかの距離閾値
     beam_skip_error_threshold: 0.80 # ビームスキップのエラー閾値　スキップされたビームの割合が異常に高い場合に「パーティクルフィルタが間違った位置に収束した」
     beam_skip_threshold: 0.6 # ビームスキップの閾値　各ビームについて「マップと一致したパーティクルの割合」がどの程度以上の場合にそのビームを位置推定の計算に使用するかを決定
-    do_beamskip: False # ビームスキップを行うかどうか default: False
+    do_beamskip: false # ビームスキップを行うかどうか default: False
     # Beam Skipをオフにすることで，15Fの出口で自己位置推定が飛ぶ減少がなくなった（1025）
 
     lambda_short: 0.1
@@ -46,9 +46,6 @@ amcl:
     pf_z: 0.99
 
     odom_frame_id: "odom"
-    # 5%ぐらいにしたい．slow * 0.05 = fast, slow = fast / 0.05.
-    # recovery_alpha_fast: 0.01
-    # recovery_alpha_slow: 0.03 # 試しに，fast:0.01, slow:0.05にすると,15Fの出口で自己位置がジャンプした．そのため，slowを小さくした．これでジャンプしづらいけど，自己位置を修正する．
     recovery_alpha_fast: 0.00 # これをオフにすればジャンプしない．パーティクル内で修正がきくようになる．
     recovery_alpha_slow: 0.00
     # 動作メカニズム
