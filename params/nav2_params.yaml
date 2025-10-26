@@ -32,7 +32,7 @@ amcl:
     laser_likelihood_max_dist: 5.0 # レーザの尤度の最大距離[m] default: 2.0 -> 5.0 100mもいらないみたい．最大でも５mにしとかないと計算負荷が高い
     laser_max_range: 100.0
     laser_min_range: -1.0
-    laser_model_type: "beam" # レーザーモデルのタイプ ("beam" or "likelihood_field")
+    laser_model_type: "likelihood_field" # レーザーモデルのタイプ ("beam" or "likelihood_field")
     # "beam": 各レーザービームの測定値を個別に評価し、マップとの一致度を計算
     # "likelihood_field": レーザービームの測定値をマップ全体の尤度場と比較して評価
     # 周りに障害物が少ない環境では，Beamのほうがいい．
@@ -84,7 +84,7 @@ global_costmap:
       resolution: 0.05 # 0.05 -> 0.10 (軽量化のため)
       track_unknown_space: true
       plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
-      filters: ["keepout_filter"]
+      # filters: ["keepout_filter"]
       obstacle_layer:
         plugin: "nav2_costmap_2d::ObstacleLayer"
         enabled: True
@@ -156,7 +156,7 @@ local_costmap:
       # footprint: "[ [0.30, 0.30], [0.30, -0.30], [-0.50, -0.30], [-0.50, 0.30] ]" # ロボットの形状（ぴったりサイズ）
       footprint: "[ [0.40, 0.30], [0.40, -0.30], [-0.60, -0.30], [-0.60, 0.30] ]" # ロボットの形状 (10cmマージン, 横は5cmマージン) これをでかくしすぎるとパスが引けなくなる
       plugins: ["stvl_layer", "obstacle_layer", "inflation_layer"]
-      filters: ["keepout_filter"]
+      # filters: ["keepout_filter"]
       track_unknown_space: true 
       static_layer:
         plugin: "nav2_costmap_2d::StaticLayer"
