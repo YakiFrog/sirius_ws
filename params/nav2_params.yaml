@@ -32,7 +32,7 @@ amcl:
     laser_likelihood_max_dist: 5.0 # レーザの尤度の最大距離[m] default: 2.0 -> 5.0 100mもいらないみたい．最大でも５mにしとかないと計算負荷が高い
     laser_max_range: 100.0
     laser_min_range: -1.0
-    # laser_model_type: "beam" # レーザーモデルのタイプ ("beam" or "likelihood_field")
+    # laser_model_type: "beam" # レーザーモデルのタイプ ("beam" or "likelihood_field") これは屋外ではおもすぎて使い物にならない．だめ．屋内ならうまく行く
     laser_model_type: "likelihood_field" # レーザーモデルのタイプ ("beam" or "likelihood_field")
     # "beam": 各レーザービームの測定値を個別に評価し、マップとの一致度を計算
     # "likelihood_field": レーザービームの測定値をマップ全体の尤度場と比較して評価
