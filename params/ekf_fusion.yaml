@@ -20,7 +20,7 @@ ekf_filter_node:
     # ========================================
     # センサータイムアウト
     # ========================================
-    sensor_timeout: 0.2  # 【変更】0.3→0.2秒（標準的な値に短縮）
+    sensor_timeout: 0.5  # 【変更】0.3→0.2秒（標準的な値に短縮）
     
     # ========================================
     # 2D/3Dモード
@@ -45,14 +45,13 @@ ekf_filter_node:
     # オドメトリ設定（ホイールエンコーダ）
     # ========================================
     odom0: /odom
-    odom0_config: [false, false, false,  # 【重大な変更】x, y, z位置を無効化（速度のみ使用）
+    odom0_config: [true,  true,  false,  # x, y位置を使用（z無効）
                    false, false, false,  # roll, pitch, yaw（IMUを優先）
                    true,  true,  false,  # vx, vy, vz（速度を使用）
                    false, false, true,   # vroll, vpitch, vyaw（vyaw角速度を使用）
                    false, false, false]  # ax, ay, az（加速度は使用しない）
     odom0_queue_size: 10
-    odom0_differential: false  # 【変更】速度データは既に相対的なのでfalse
-    # 【理由】位置は速度の積分値。位置と速度を同時に使うと二重に情報を与えて不安定になる
+    odom0_differential: false
     
     # ========================================
     # HWT905 IMU設定（AHRS：姿勢計算済み）

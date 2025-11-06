@@ -110,9 +110,10 @@ Roboteq::Roboteq() : Node("roboteq_ros2_driver")
     cmdvel_setup();
     odom_setup();
 //
-//  odom publisher
+//  odom publisher (using SensorDataQoS for compatibility with EKF)
 //
-    odom_pub = this->create_publisher<nav_msgs::msg::Odometry>(odom_topic, 1000);
+    auto qos = rclcpp::SensorDataQoS();
+    odom_pub = this->create_publisher<nav_msgs::msg::Odometry>(odom_topic, qos);
 //
 // cmd_vel subscriber
 //
@@ -499,34 +500,34 @@ void Roboteq::odom_setup()
 {
     odom_baselink_transform_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
     
+    // Initialize odom message frame IDs (always needed, not just for TF)
+    odom_msg.header.frame_id = odom_frame;
+    odom_msg.child_frame_id = base_frame;
+
+    // Set up the pose covariance (always needed for EKF)
+    for (size_t i = 0; i < 36; i++)
+    {
+        odom_msg.pose.covariance[i] = 0;
+        odom_msg.twist.covariance[i] = 0;
+    }
+
+    odom_msg.pose.covariance[0] = 0.001;   // x
+    odom_msg.pose.covariance[7] = 0.001;   // y
+    odom_msg.pose.covariance[14] = 1000000; // z (not used in 2D)
+    odom_msg.pose.covariance[21] = 1000000; // roll (not used in 2D)
+    odom_msg.pose.covariance[28] = 1000000; // pitch (not used in 2D)
+    odom_msg.pose.covariance[35] = 1000;    // yaw
+
+    // Set up the twist covariance
+    odom_msg.twist.covariance[0] = 0.001;   // vx
+    odom_msg.twist.covariance[7] = 0.001;   // vy
+    odom_msg.twist.covariance[14] = 1000000; // vz (not used in 2D)
+    odom_msg.twist.covariance[21] = 1000000; // vroll (not used in 2D)
+    odom_msg.twist.covariance[28] = 1000000; // vpitch (not used in 2D)
+    odom_msg.twist.covariance[35] = 1000;    // vyaw
+
     if (pub_odom_tf)
     {
-        odom_msg.header.stamp = this->get_clock()->now();
-    
-        odom_msg.header.frame_id = odom_frame;
-        odom_msg.child_frame_id = base_frame;
-
-        // Set up the pose covariance
-        for (size_t i = 0; i < 36; i++)
-        {
-            odom_msg.pose.covariance[i] = 0;
-            odom_msg.twist.covariance[i] = 0;
-        }
-
-        odom_msg.pose.covariance[7] = 0.001;
-        odom_msg.pose.covariance[14] = 1000000;
-        odom_msg.pose.covariance[21] = 1000000;
-        odom_msg.pose.covariance[28] = 1000000;
-        odom_msg.pose.covariance[35] = 1000;
-
-        // Set up the twist covariance
-        odom_msg.twist.covariance[0] = 0.001;
-        odom_msg.twist.covariance[7] = 0.001;
-        odom_msg.twist.covariance[14] = 1000000;
-        odom_msg.twist.covariance[21] = 1000000;
-        odom_msg.twist.covariance[28] = 1000000;
-        odom_msg.twist.covariance[35] = 1000;
-
         // Set up the transform message: move to odom_publish
     
         tf2::Quaternion q;
@@ -748,6 +749,8 @@ void Roboteq::odom_publish()
     }
 
     odom_msg.header.stamp = this->get_clock()->now();
+    odom_msg.header.frame_id = odom_frame;
+    odom_msg.child_frame_id = base_frame;
     odom_msg.pose.pose.position.x = odom_x * dt;
     odom_msg.pose.pose.position.y = odom_y * dt;
     odom_msg.pose.pose.position.z = 0.0;
