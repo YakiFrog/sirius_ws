@@ -399,7 +399,7 @@ velocity_smoother:
     min_velocity: [-0.80, 0.0, -2.0]
     max_accel: [0.80, 0.0, 0.80] # 加速度を減らすことで急停止を防止した．なめらかになったが完璧ではない．だが，バッテリーが停止するのは避けれそう．
     max_decel: [-0.80, 0.0, -0.80]
-    odom_topic: "/odometry/filtered"
+    odom_topic: "odom"
     odom_duration: 0.1
     deadband_velocity: [0.0, 0.0, 0.0]
     velocity_timeout: 1.0
@@ -428,7 +428,7 @@ bt_navigator:
     use_sim_time: False
     global_frame: map
     robot_base_frame: base_footprint # default: base_link
-    odom_topic: /odometry/filtered
+    odom_topic: /odom
     bt_loop_duration: 10
     default_server_timeout: 20
     # wait_for_service_timeout: 1000
